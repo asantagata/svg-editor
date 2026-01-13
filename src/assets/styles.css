@@ -1,0 +1,489 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --c-accent: #b53461;
+    --c-accent-hover: color-mix(in oklab, var(--c-accent) 100%, var(--c-back) 15%);
+    --c-accent-active: color-mix(in oklab, var(--c-accent) 100%, var(--c-back) 25%);
+    --c-accent-border: color-mix(in oklab, var(--c-accent) 100%, var(--c-text) 10%);
+    --c-back: #221d1e;
+    --c-dark: color-mix(in oklab, var(--c-back) 100%, black 15%);
+    --c-dark-hover: var(--c-back);
+    --c-dark-button-hover: color-mix(in oklab, var(--c-dark) 100%, var(--c-text) 9%);
+    --c-dark-active: color-mix(in oklab, var(--c-dark) 100%, var(--c-text) 12%);
+    --c-text: #f7f2f3;
+    --c-halftext: color-mix(in oklab, var(--c-text) 100%, var(--c-back) 30%);
+    --c-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 10%);
+    --c-popover: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 13%);
+    --c-popover-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 20%);
+    --c-popover-hover: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 10%);
+    --c-popover-active: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 5%);
+    font-size: small;
+    --s-sm: 0.25rem;
+    --s-md: 0.5rem;
+    --s-lg: 1rem;
+    --s-border: 2px;
+    --s-left-sidebar: 250px;
+    --s-right-sidebar: 300px;
+}
+
+body {
+    font-family: "Roboto Condensed", sans-serif;
+    background: var(--c-back);
+    color: var(--c-text);
+    width: 100dvw;
+    height: 100dvh;
+    margin: 0;
+    font-size: small;
+    cursor: default;
+    user-select: none;
+}
+
+* {
+    box-sizing: border-box;
+    font-size: inherit;
+    color: inherit;
+    cursor: inherit;
+}
+
+#app {
+    display: flex;
+    width: 100dvw;
+    height: 100dvh;
+}
+
+#app > * {
+    height: 100dvh;
+}
+
+.sidebar {
+    padding: var(--s-md);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    border: var(--s-border) solid transparent;
+}
+
+.sidebar > div {
+    padding: var(--s-md);
+}
+
+.sidebar > div:not(:first-child) {
+    border-top: var(--s-border) solid var(--c-border);
+}
+
+#left-sidebar {
+    border-right: var(--s-border) solid var(--c-border);
+    width: var(--s-left-sidebar);
+}
+
+#canvas-wrapper {
+    flex-grow: 1;
+    background: var(--c-dark);
+    display: flex;
+    padding: var(--s-md);
+}
+
+#right-sidebar {
+    border-left: var(--s-border) solid var(--c-border);
+    width: var(--s-right-sidebar);
+}
+
+.button {
+    border-radius: var(--s-md);
+    overflow: hidden;
+    box-shadow: 0 3px 2px #0002;
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.multi-button {
+    display: flex;
+}
+
+.multi-button > * {
+    border-radius: 0;
+}
+
+button {
+    background: var(--c-accent);
+    color: var(--c-text);
+    padding: var(--s-md);
+    border: none;
+    border-radius: var(--s-md);
+    cursor: pointer;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.multi-button > button:not(:first-child, #path-list > .multi-button > button) {
+    border-left: var(--s-border) solid var(--c-accent-border);
+}
+
+button:hover {
+    background: var(--c-accent-hover);
+}
+
+button:active {
+    background: var(--c-accent-active);
+}
+
+.icon-button {
+    box-sizing: content-box;
+    flex-grow: 0;
+}
+
+h2, label {
+    margin: 0;
+    font-size: x-small;
+    text-transform: uppercase;
+    color: var(--c-halftext);
+    font-weight: bold;
+}
+
+.popover {
+    background: var(--c-popover);
+    border-radius: var(--s-md);
+    position: fixed;
+    margin: var(--s-md);
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 2px 4px #0003;
+}
+
+#left-sidebar .popover {
+    width: calc(var(--s-left-sidebar) - var(--s-md) * 6 - var(--s-border) * 2);
+}
+
+#right-sidebar .popover {
+    width: calc(var(--s-right-sidebar) - var(--s-md) * 10 - var(--s-border) * 4);
+}
+
+.popover > button:not(:first-child) {
+    border-top: var(--s-border) solid var(--c-popover-border);
+}
+
+.popover > button {
+    background: inherit;
+    width: 100%;
+    display: flex;
+    border-radius: 0;
+    justify-content: start;
+    gap: var(--s-md);
+}
+
+.popover > button:hover {
+    background: var(--c-popover-hover);
+}
+
+.popover > button:active {
+    background: var(--c-popover-active);
+}
+
+.no {
+    padding: var(--s-lg) var(--s-md);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    color: var(--c-halftext);
+}
+
+#right-sidebar > .no {
+    height: 100%;
+}
+
+#path-list {
+    margin: var(--s-md) 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow-y: auto;
+    background: var(--c-dark);
+    border-radius: var(--s-md);
+}
+
+#path-list > .multi-button, #path-list > .multi-button > button {
+    background: inherit;
+}
+
+#path-list > .multi-button > button:first-child {
+    justify-content: start;
+    gap: var(--s-md);
+}
+
+#path-list > .multi-button.selected-path > button:first-child {
+    cursor: default;
+}
+
+#path-list > .multi-button.selected-path {
+    background: var(--c-accent);
+}
+
+#path-list > .multi-button:not(.selected-path):hover {
+    background: var(--c-dark-hover);
+}
+
+#path-list > .multi-button:not(.selected-path) > button:hover:not(:first-child) {
+    background: var(--c-dark-button-hover);
+}
+
+#path-list > .multi-button.selected-path > button:hover:not(:first-child) {
+    background: var(--c-accent-hover);
+}
+
+#path-list > .multi-button:not(.selected-path) > button:active:not(:first-child),
+#path-list > .multi-button:not(.selected-path):has(> button:active:first-child) {
+    background: var(--c-dark-active);
+}
+
+#path-list > .multi-button.selected-path > button:active:not(:first-child) {
+    background: var(--c-accent-active);
+}
+
+.paths-wrapper {
+    min-height: 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+svg {
+    width: var(--s-lg);
+    height: var(--s-lg);
+    flex-shrink: 0;
+}
+
+.option-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.option-wrapper + .option-wrapper {
+    margin-top: var(--s-md);
+}
+
+.segmented-control {
+    background: var(--c-dark);
+    display: flex;
+    border-radius: var(--s-md);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.segmented-control-option {
+    padding: var(--s-md);
+    display: flex;
+    cursor: pointer;
+}
+
+.segmented-control-option:not(.segmented-control-selected):hover, .spin-button:hover {
+    background: var(--c-dark-button-hover);
+}
+
+.segmented-control-option:not(.segmented-control-selected):active, .spin-button:active {
+    background: var(--c-dark-active);
+}
+
+.segmented-control-selected {
+    background: var(--c-accent);
+    cursor: default;
+}
+
+input[type=number], input[type=text] {
+    background: var(--c-dark);
+    padding: var(--s-md);
+    border-radius: var(--s-md);
+    border: none;
+    cursor: text;
+    width: 100%;
+}
+
+input[type=number] {
+    appearance: textfield;
+    width: 100%;
+}
+
+.number-input-wrapper {
+    display: flex;
+    position: relative;
+    max-width: min(10ch, 100%);
+}
+
+.spin-button-wrapper {
+    position: absolute;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.spin-button {
+    flex-shrink: 1;
+    flex-grow: 1;
+    display: flex;
+}
+
+.spin-button:first-child {border-top-right-radius: var(--s-md)}
+.spin-button:last-child {border-bottom-right-radius: var(--s-md)}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.command-list {
+    background: var(--c-dark);
+    padding: var(--s-md);
+    border-radius: var(--s-md);
+    max-height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
+}
+
+.data-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.options-section {
+    flex-shrink: 0;
+}
+
+#right-sidebar > * {
+    max-height: 100%;
+    min-height: 0;
+}
+
+.command {
+    background: var(--c-back);
+    padding: var(--s-md);
+    border-radius: var(--s-md);
+    border: var(--s-border) solid var(--c-border);
+}
+
+.command, .command-arguments {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
+}
+
+.new-command-bar {
+    display: flex;
+    position: relative;
+    gap: var(--s-sm);
+    justify-content: center;
+}
+
+.new-command-bar::before {
+    display: block;
+    content: '';
+    border-top: calc(var(--s-border) / 2) solid var(--c-dark-button-hover);
+    border-bottom: calc(var(--s-border) / 2) solid var(--c-dark-button-hover);
+    border-radius: calc(var(--s-border) / 2);
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.new-command-button {
+    display: flex;
+    background: var(--c-back);
+    padding: 0 var(--s-md);
+    border-radius: var(--s-md);
+    border: var(--s-border) solid var(--c-border);
+    cursor: pointer;
+    position: relative;
+}
+
+.new-command-button:hover { background:var(--c-dark-button-hover); }
+.new-command-button:active { background:var(--c-dark-active); }
+
+.dropdown-trigger {
+    background: var(--c-dark);
+    padding: var(--s-md);
+    border-radius: var(--s-md);
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.dropdown-trigger-content {
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+}
+
+.command-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+}
+
+.command-heading > div:first-child { flex-grow: 1; }
+
+.x-button {
+    color: var(--c-accent);
+    padding: var(--s-md);
+    display: flex;
+    border-radius: var(--s-md);
+    cursor: pointer;
+}
+
+.x-button:hover { background: var(--c-dark-button-hover); }
+.x-button:active { background: var(--c-dark-active); }
+
+.first-command-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+}
+
+.point-input {
+    display: flex;
+    align-items: center;
+}
+
+.point-comma {
+    margin-right: 1ch;
+}
+
+.command .number-input-wrapper {
+    flex-grow: 1;
+    max-width: 100%;
+}
+
+.input-flex {
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+}
+
+.input-flex > *:first-child {flex-grow: 1}
+
+.segmented-control.vertical {
+    flex-direction: column;
+}
+
+#canvas-wrapper > svg {
+    width: 100%;
+    height: 100%;
+}
+
+ellipse {
+    cursor: grab;
+}
+
+#canvas-wrapper > svg:active > ellipse {
+    cursor: grabbing;
+}
