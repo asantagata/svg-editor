@@ -13,8 +13,8 @@ export default function Point(coords, type) {
             {
                 tag: 'ellipse',
                 xmlns: 'http://www.w3.org/2000/svg', 
-                fill: type === 'outline' ? lightColor : color,
-                stroke: color,
+                fill: type === 'outline' || type === 'line' ? lightColor : color,
+                stroke: type === 'line' ? lightColor : color,
                 'stroke-width': strokeWidth,
                 cx: coords.x, 
                 cy: coords.y,

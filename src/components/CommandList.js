@@ -4,6 +4,19 @@ import CommandArguments from "./CommandArguments.js";
 import Dropdown from "./input/Dropdown.js";
 import SVGs from "./SVGs.js";
 
+export function selectCommandFromList(command) {
+    const element = document.querySelector(`#command-list > .command[data-key=command-${command.id}]`);
+    if (!element) return;
+    element.scrollIntoView({behavior: 'smooth', block: 'center'}); 
+    element.animate([
+        {background: 'var(--c-halftext)'},
+        {background: 'var(--c-back)'}
+    ], {
+        duration: 500,
+        easing: 'ease-out',
+    });
+}
+
 function NewCommandBar(index) {
     return {
         class: 'new-command-bar',
@@ -74,6 +87,7 @@ function CommandItem(command, index) {
 export default function CommandList(d) {
     return {
         class: 'command-list',
+        id: 'command-list',
         children: d.flatMap((command, i) => [
             CommandItem(command, i),
             NewCommandBar(i)

@@ -4,6 +4,7 @@ import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType } from "../
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
+import { selectCommandFromList } from "./CommandList.js";
 
 const highlightedPathColor = '#D693AA';
 const overlayPathColor = '#EACCD6';
@@ -48,7 +49,8 @@ function Canvas() {
                         selectedPointCommand: null,
                         xIndex: -1,
                         selectedPointCommandOriginalArgs: [],
-                        svgBindingRect: null
+                        svgBindingRect: null,
+                        plusCommandId: -1
                     };
                 },
                 render() {
@@ -103,7 +105,8 @@ function Canvas() {
                                 },
 
                                 // + points
-                                ...context.selectedPath.d.map((command, index, commands) => {
+                                ...context.selectedPath.d.flatMap((command, index, commands) => {
+                                    if (index === 0) return [];
                                     const prevCommand = commands.at(index - 1);
                                     const coords = isolateCoordsFromAbsoluteCmd(command, commands);
                                     const prevCoords = isolateCoordsFromAbsoluteCmd(prevCommand, commands);
@@ -112,13 +115,26 @@ function Canvas() {
                                         y: (coords.y + prevCoords.y) / 2
                                     };
                                     return {
-                                        ...Point(avgCoords, 'plus'), 
-                                        key: `plusbefore-${command.id}`,
+                                        ...Point(avgCoords, 
+                                            command.id === this.state.plusCommandId ? 'plus' : 'line'
+                                        ), 
+                                        key: `line-${command.id}`,
                                         on: {
                                             click() {
-                                                setCommandType(command, 'L');
-                                                insertCommand('L', context.selectedPath.d.findIndex(cmd => cmd.id === command.id) - 1);
-                                                context.commit();
+                                                if (command.id === this.state.plusCommandId) {
+                                                    setCommandType(command, 'L');
+                                                    this.state.plusCommandId = -1;
+                                                    insertCommand('L', context.selectedPath.d.findIndex(cmd => cmd.id === command.id) - 1);
+                                                    context.commit();
+                                                } else {
+                                                    selectCommandFromList(command);
+                                                    this.state.plusCommandId = command.id;
+                                                    this.rerender();
+                                                }
+                                            },
+                                            mouseleave() {
+                                                this.state.plusCommandId = -1;
+                                                this.rerender();
                                             }
                                         }
                                     };                                    
