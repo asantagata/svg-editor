@@ -350,9 +350,10 @@ input::-webkit-inner-spin-button {
     gap: var(--s-md);
 }
 
-.data-section {
+.sidebar > .data-section {
     display: flex;
     flex-direction: column;
+    padding-top: 0;
 }
 
 .options-section {
@@ -491,4 +492,8 @@ g {
 
 #canvas-wrapper > svg[data-dragging=true], #canvas-wrapper > svg[data-dragging=true] * {
     cursor: grabbing;
+}
+
+.data-section > h2, .options-section > h2 {
+    margin-bottom: var(--s-md);
 }

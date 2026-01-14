@@ -31,7 +31,13 @@ const SVGs = {
     sweepOn: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1A11 11 0 1 0 23 12" /></svg>`,
     sweepOff: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1A11 11 0 0 1 23 12" /></svg>`,
     clockwise: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>`,
-    counterclockwise: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`
+    counterclockwise: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
+    showAll: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><path d="M19 12 a
+    1 1 0 0 0 0 0 
+    7.5 6.5 0 0 0-14 0 
+    1 1 0 0 0 0 0
+    7.5 6.5 0 0 0 14 0Z"/><path d="M10 5l2 -2l2 2" /><path d="M10 19l2 2l2 -2" /></svg>`,
+    hideAll: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.2928 11.2928A1 1 0 0 0 12.7071 12.7071" /><path d="M15.5 15.4A7.5 6.5 0 0 1 5 11.9a1 1 0 0 0 0 0 7.5 6.5 0 0 1 3-3"/><path d="M12 7.9A7.5 6.5 0 0 1 19 12a1 1 0 0 0 0 0 a7.5 6.5 0 0 1 -1 1.5" /><path d="M10 5l2 -2l2 2" /><path d="M10 19l2 2l2 -2" /><path d="M6 6l12 12" /></svg>`
 };
 
 export default SVGs;

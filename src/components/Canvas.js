@@ -90,7 +90,19 @@ function Canvas() {
                                         let coords = isolateCoordsFromAbsoluteCmd(command, context.selectedPath.d);
                                         const verb = index ? 'L' : 'M';
                                         return `${verb}${coords.x} ${coords.y}`;
-                                    }).join('') + context.selectedPath.d.map((command, index, commands) => {
+                                    }).join('')
+                                },
+
+                                {
+                                    tag: 'path', 
+                                    xmlns: 'http://www.w3.org/2000/svg', 
+                                    'stroke-linecap': 'round',
+                                    'stroke-linejoin': 'round',
+                                    'stroke-width': overlayPathWidth,
+                                    stroke: overlayPathColor + 'C0',
+                                    key: 'overlay-selected-path-controls',
+                                    'stroke-dasharray': '0.2 0.2',
+                                    d: context.selectedPath.d.map((command, index, commands) => {
                                         if (index === 0) return '';
                                         if (command.type === 'C' || command.type === 'Q') {
                                             const prevCommand = commands[index - 1];

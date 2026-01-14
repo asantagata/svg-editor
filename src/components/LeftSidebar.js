@@ -12,15 +12,40 @@ function PathList() {
                 class: {'multi-button': true, 'selected-path': p === context.selectedPath},
                 children: [
                     {
+                        key: 'name',
                         tag: 'button',
                         innerHTML: `${SVGs[p['data-type']]} ${p['data-name']}`,
                         on: {click() {
                             selectPath(p);
                         }}
                     },
-                    {
+                    ...(context.icon.children.length > 1 && p === context.selectedPath ? [{
+                        key: 'show-hide-all',
+                        title: context.icon.children.every(c => c.style?.display || c === context.selectedPath) ? `Show all` : `Hide all`,
                         tag: 'button',
                         class: 'icon-button',
+                        innerHTML: context.icon.children.every(c => c.style?.display || c === context.selectedPath) 
+                            ? SVGs.showAll : SVGs.hideAll,
+                        on: {click() {
+                            if (context.icon.children.every(c => c.style?.display || c === context.selectedPath)) {
+                                context.icon.children.forEach(c => {
+                                    if (c !== context.selectedPath)
+                                        c.style = {display: ''};
+                                });
+                            } else {
+                                context.icon.children.forEach(c => {
+                                    if (c !== context.selectedPath)
+                                        c.style = {display: 'none'};
+                                });
+                            }
+                            context.commit();
+                        }}
+                    }] : []),
+                    {
+                        key: 'show-hide-me',
+                        tag: 'button',
+                        class: 'icon-button',
+                        title: p.style?.display ? 'Show' : 'Hide',
                         innerHTML: p.style?.display ? SVGs.show : SVGs.hide,
                         on: {click() {
                             if (p.style?.display) {
@@ -32,16 +57,20 @@ function PathList() {
                         }}
                     },
                     {
+                        key: 'copy',
                         tag: 'button',
                         class: 'icon-button',
+                        title: 'Copy',
                         innerHTML: SVGs.copy,
                         on: {click() {
                             addPath(p['data-type'][0].toUpperCase() + p['data-type'].slice(1), p);
                         }}
                     },
                     {
+                        key: 'delete',
                         tag: 'button',
                         class: 'icon-button',
+                        title: 'Delete',
                         innerHTML: SVGs.delete,
                         on: {click() {
                             if (p === context.selectedPath)
