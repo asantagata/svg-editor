@@ -132,16 +132,23 @@ function Canvas() {
                                         ), 
                                         key: `line-${command.id}`,
                                         on: {
-                                            click() {
+                                            dblclick() {
                                                 if (command.id === this.state.plusCommandId) {
                                                     setCommandType(command, 'L');
                                                     this.state.plusCommandId = -1;
                                                     insertCommand('L', context.selectedPath.d.findIndex(cmd => cmd.id === command.id) - 1);
                                                     context.commit();
-                                                } else {
-                                                    selectCommandFromList(command);
+                                                }
+                                            },
+                                            click() {
+                                                selectCommandFromList(command);
+                                                if (this.state.plusCommandId !== command.id) {
                                                     this.state.plusCommandId = command.id;
                                                     this.rerender();
+                                                    window.setTimeout(() => {
+                                                        this.state.plusCommandId = -1;
+                                                        this.rerender();
+                                                    }, 500);
                                                 }
                                             },
                                             mouseleave() {

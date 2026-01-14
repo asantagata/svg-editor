@@ -481,10 +481,9 @@ input::-webkit-inner-spin-button {
     height: 100%;
 }
 
-g[data-point-type=plus] {
+g[data-point-type=plus], g[data-point-type=line] {
     cursor: pointer;
 }
-
 
 g {
     cursor: grab;
