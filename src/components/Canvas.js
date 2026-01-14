@@ -30,6 +30,13 @@ function fixRect(rect) {
     return rect;
 }
 
+function pointMousedownListener(thisArg, command, xIndex = null) {
+    thisArg.state.selectedPointCommand = command;
+    thisArg.state.xIndex = xIndex ?? command.args.length - 2;
+    thisArg.state.selectedPointCommandOriginalArgs = [...command.args];
+    thisArg.state.svgBindingRect = fixRect(thisArg.element.getBoundingClientRect());
+}
+
 function Canvas() {
     return {
         id: 'canvas-wrapper',
@@ -48,14 +55,15 @@ function Canvas() {
                     return {
                         ...context.iconSVG,
                         children: [
+                            // grid
                             ...Grid(context.icon.width, context.icon.height),
+
+                            // main SVG
                             ...getIconSVG().children.map(path => ({
                                 ...path, 
                                 key: `path-${path['data-name']}`,
                                 stroke: context.selectedPath && context.selectedPath['data-name'] === path['data-name']
-                                    ? highlightedPathColor : 'currentColor', 
-                                binding: context.selectedPath && context.selectedPath['data-name'] === path['data-name']
-                                    ? 'selected-path' : undefined,
+                                    ? highlightedPathColor : 'currentColor',
                                 on: {click() { 
                                     selectPath(context.icon.children
                                         .find(child => child['data-name'] === path['data-name'])) 
@@ -63,6 +71,7 @@ function Canvas() {
                                 })
                             ),
 
+                            // underline path
                             ...(context.selectedPath ? [
                                 {
                                     tag: 'path', 
@@ -72,25 +81,48 @@ function Canvas() {
                                     'stroke-width': overlayPathWidth,
                                     stroke: overlayPathColor,
                                     key: 'overlay-selected-path',
-                                    binding: 'overline',
                                     d: context.selectedPath.d.map((command, index) => {    
                                         let coords = isolateCoordsFromAbsoluteCmd(command, context.selectedPath.d);
                                         const verb = index ? 'L' : 'M';
                                         return `${verb}${coords.x} ${coords.y}`;
+                                    }).join('') + context.selectedPath.d.map((command, index, commands) => {
+                                        if (index === 0) return '';
+                                        if (command.type === 'C' || command.type === 'Q') {
+                                            const prevCommand = commands[index - 1];
+                                            let coords = isolateCoordsFromAbsoluteCmd(command, commands);
+                                            let prevCoords = isolateCoordsFromAbsoluteCmd(prevCommand, commands);
+                                            let prevCoordsPoint = {x: command.args[0], y: command.args[1]};
+                                            let coordsPoint = command.type === 'Q' ? prevCoordsPoint
+                                                : {x: command.args[2], y: command.args[3]};
+                                            return `M${prevCoords.x} ${prevCoords.y}L${prevCoordsPoint.x} ${prevCoordsPoint.y}M${coords.x} ${coords.y}L${coordsPoint.x} ${coordsPoint.y}`;
+                                        } else return '';
                                     }).join('')
                                 },
-                                ...context.selectedPath.d.map((command) => {
-                                    if (command.type === 'Z') return false;
+
+                                // points
+                                ...context.selectedPath.d.flatMap((command) => {
+                                    if (command.type === 'Z') return [];
                                     const coords = isolateCoordsFromAbsoluteCmd(command, context.selectedPath.d);
-                                    return {...Point(coords), key: `endpoint${command.id}`, binding: `endpoint-${command.id}`, on: {
+                                    const endpoint = {...Point(coords, 'full'), key: `endpoint${command.id}`, on: {
                                         mousedown() {
-                                            this.state.selectedPointCommand = command;
-                                            this.state.xIndex = command.args.length - 2;
-                                            this.state.selectedPointCommandOriginalArgs = [...command.args];
-                                            this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                            pointMousedownListener(this, command);
                                         }
                                     }};
-                                }).filter(x => x)
+                                    if (command.type === 'C' || command.type === 'Q') {
+                                        const startControl = {...Point({x: command.args[0], y: command.args[1]}, 'outline'), key: `startcontrol${command.id}`, on: {
+                                            mousedown() {
+                                                pointMousedownListener(this, command, 0);
+                                            }
+                                        }};
+                                        if (command.type === 'Q') return [startControl, endpoint];
+                                        const endControl = {...Point({x: command.args[2], y: command.args[3]}, 'outline'), key: `endcontrol${command.id}`, on: {
+                                            mousedown() {
+                                                pointMousedownListener(this, command, 2);
+                                            }
+                                        }};
+                                        return [startControl, endControl, endpoint];
+                                    } else return endpoint;
+                                })
                             ] : [])
                         ],
                         on: {
@@ -111,14 +143,12 @@ function Canvas() {
                             mouseup(e) {
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
-                                    // if (difference) ...
                                     context.commit();
                                 }
                             },
                             mouseleave(e) {
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
-                                    // if (difference) ...
                                     context.commit();
                                 }
                             }

@@ -35,6 +35,7 @@ function PointInput(command, xIndex, yIndex) {
 
 function LabelledInput(label, input) {
     return {
+        class: '',
         children: [
             {tag: 'label', children: label},
             input
