@@ -1,6 +1,6 @@
 import context from "../utils/context.js";
 import { selectPath } from "../utils/path.js";
-import { isolateCoordsFromAbsoluteCmd } from "../utils/d.js";
+import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType } from "../utils/d.js";
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
@@ -54,6 +54,9 @@ function Canvas() {
                 render() {
                     return {
                         ...context.iconSVG,
+                        dataset: {
+                            dragging: !!this.state.selectedPointCommand
+                        },
                         children: [
                             // grid
                             ...Grid(context.icon.width, context.icon.height),
@@ -98,6 +101,28 @@ function Canvas() {
                                         } else return '';
                                     }).join('')
                                 },
+
+                                // + points
+                                ...context.selectedPath.d.map((command, index, commands) => {
+                                    const prevCommand = commands.at(index - 1);
+                                    const coords = isolateCoordsFromAbsoluteCmd(command, commands);
+                                    const prevCoords = isolateCoordsFromAbsoluteCmd(prevCommand, commands);
+                                    const avgCoords = {
+                                        x: (coords.x + prevCoords.x) / 2,
+                                        y: (coords.y + prevCoords.y) / 2
+                                    };
+                                    return {
+                                        ...Point(avgCoords, 'plus'), 
+                                        key: `plusbefore-${command.id}`,
+                                        on: {
+                                            click() {
+                                                setCommandType(command, 'L');
+                                                insertCommand('L', context.selectedPath.d.findIndex(cmd => cmd.id === command.id) - 1);
+                                                context.commit();
+                                            }
+                                        }
+                                    };                                    
+                                }),
 
                                 // points
                                 ...context.selectedPath.d.flatMap((command) => {

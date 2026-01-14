@@ -480,10 +480,15 @@ input::-webkit-inner-spin-button {
     height: 100%;
 }
 
-ellipse {
+g[data-point-type=plus] {
+    cursor: pointer;
+}
+
+
+g {
     cursor: grab;
 }
 
-#canvas-wrapper > svg:active > ellipse {
+#canvas-wrapper > svg[data-dragging=true], #canvas-wrapper > svg[data-dragging=true] * {
     cursor: grabbing;
 }

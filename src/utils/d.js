@@ -120,7 +120,6 @@ export function insertCommand(type, index) {
         args,
         id: Math.max(...context.selectedPath.d.map(cmd => cmd.id)) + 1,
     });
-    context.commit();
 }
 
 export function setCommandType(command, type) {
@@ -129,17 +128,15 @@ export function setCommandType(command, type) {
     const prevCommand = context.selectedPath.d[index - 1];
     const {x, y} = isolateCoordsFromAbsoluteCmd(command, context.selectedPath.d);
     const {x: px, y: py} = isolateCoordsFromAbsoluteCmd(prevCommand, context.selectedPath.d);
-    const hx = (x + px) / 2, hy = (y + py) / 2;
     command.type = type;
     command.args = {
         M: [x, y],
         L: [x, y],
-        Q: [hx, y, x, y],
-        C: [hx, y, x, hy, x, y],
+        Q: [px, y, x, y],
+        C: [px, y, x, py, x, y],
         A: [Math.abs(x - px) / 2 || 1, Math.abs(y - py) / 2 || 1, 0, 0, 0, x, y],
         Z: []
     }[type];
-    context.commit();
 }
 
 const cmdPointArgs = {

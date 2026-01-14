@@ -21,6 +21,7 @@ function NewCommandBar(index) {
             title: `New "${label}" command`,
             on: {click() {
                 insertCommand(value, index);
+                context.commit();
             }}
         }))
     };
@@ -39,6 +40,7 @@ function CommandItem(command, index) {
                         () => command.type,
                         (value) => {
                             setCommandType(command, value);
+                            context.commit();
                         },
                         [
                             {value: 'M', label: `${SVGs.commandM} Move`},
