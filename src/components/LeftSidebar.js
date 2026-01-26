@@ -2,6 +2,7 @@ import context from "../utils/context.js";
 import { addPath, selectPath } from "../utils/path.js";
 import SVGs from "./SVGs.js";
 import Demos from "./Demos.js";
+import Exports from "./Exports.js";
 
 function PathList() {
     if (context.icon.children.length) {
@@ -153,7 +154,13 @@ function LeftSidebar() {
                     {tag: 'h2', children: 'Demos'},
                     Demos()
                 ]
-            }
+            },
+            {
+                children: [
+                    {tag: 'h2', children: 'Exports'},
+                    Exports()
+                ]
+            },
         ]
     }
 };

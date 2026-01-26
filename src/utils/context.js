@@ -10,7 +10,7 @@ const context = {
     icon: {
         tag: 'svg', xmlns: "http://www.w3.org/2000/svg",
         fill: "none", stroke: "currentColor",
-        width: 24, height: 24, 'viewBox': '0 0 24 24', // always preserve viewbox='0 0 w h' % w,h are pos ints
+        width: 24, height: 24, 
         children: []
     },
     selectedPath: null,
@@ -19,7 +19,8 @@ const context = {
         context.iconSVG = getIconSVG();
         context.rerender();
     },
-    iconSVG: {tag: 'svg', xmlns: "http://www.w3.org/2000/svg", children: []}
+    iconSVG: {tag: 'svg', xmlns: "http://www.w3.org/2000/svg", children: []},
+    name: 'my-icon'
 };
 
 export default context;
