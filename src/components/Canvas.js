@@ -56,7 +56,8 @@ function Canvas() {
                         translatingPathName: null,
                         translatingPathStartCoords: null,
                         translatingPathOffsets: null,
-                        translatingPathStartD: null
+                        translatingPathStartD: null,
+                        prospectiveTranslatingPathName: null
                     };
                 },
                 render() {
@@ -81,7 +82,11 @@ function Canvas() {
                                         selectPath(context.icon.children
                                             .find(child => child['data-name'] === path['data-name'])) 
                                     },
-                                    mousedown(e) {
+                                    mousedown() {
+                                        this.state.prospectiveTranslatingPathName = path['data-name'];
+                                    },
+                                    mousemove(e) {
+                                        if (this.state.prospectiveTranslatingPathName !== path['data-name']) return;
                                         this.state.translatingPathName = path['data-name'];
                                         this.state.translatingPathStartD = context.icon.children.find(c => c['data-name'] === path['data-name']).d;
                                         this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
@@ -232,6 +237,7 @@ function Canvas() {
                                 }
                             },
                             click(e) {
+                                this.state.prospectiveTranslatingPathName = null;
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
                                     context.commit();
@@ -242,6 +248,7 @@ function Canvas() {
                             },
                             mouseleave(e) {
                                 if (this.state.selectedPointCommand) {
+                                this.state.prospectiveTranslatingPathName = null;
                                     this.state.selectedPointCommand = null;
                                     context.commit();
                                 } else if (this.state.translatingPathName) {
