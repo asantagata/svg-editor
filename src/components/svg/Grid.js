@@ -10,9 +10,9 @@ export default function Grid(width, height) {
     const bgCols = Array.from({length: width + 1}, (_, i) => i).filter(i => Math.abs(halfWidth - i) >= 1);
     const frontCols = Array.from({length: width + 1}, (_, i) => i).filter(i => Math.abs(halfWidth - i) < 1);
     return [
-        ...bgRows.map(i => ({tag: 'path', key: `row-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfHeight - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M0 ${i}H${width}`})),
-        ...bgCols.map(i => ({tag: 'path', key: `col-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfWidth - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M${i} 0V${height}`})),
-        ...frontRows.map(i => ({tag: 'path', key: `row-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfHeight - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M0 ${i}H${width}`})),
-        ...frontCols.map(i => ({tag: 'path', key: `col-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfWidth - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M${i} 0V${height}`})),
+        ...bgRows.map(i => ({tag: 'path', 'data-gridline': 'true', key: `row-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfHeight - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M0 ${i}H${width}`})),
+        ...bgCols.map(i => ({tag: 'path', 'data-gridline': 'true', key: `col-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfWidth - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M${i} 0V${height}`})),
+        ...frontRows.map(i => ({tag: 'path', 'data-gridline': 'true', key: `row-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfHeight - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M0 ${i}H${width}`})),
+        ...frontCols.map(i => ({tag: 'path', 'data-gridline': 'true', key: `col-${i}`, 'stroke-width': gridlineWidth, stroke: (Math.abs(halfWidth - i) >= 1) ? gridlineColor : selectedGridlineColor, xmlns: 'http://www.w3.org/2000/svg', d: `M${i} 0V${height}`})),
     ];
 }

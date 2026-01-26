@@ -244,6 +244,9 @@ function Canvas() {
                                 } else if (this.state.translatingPathName) {
                                     this.state.translatingPathName = null;
                                     context.commit();
+                                } else if (context.selectedPath && !e.target.closest('svg > *:not([data-gridline=true])')) {
+                                    context.selectedPath = null;
+                                    context.commit();
                                 }
                             },
                             mouseleave(e) {
