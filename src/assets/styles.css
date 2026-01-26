@@ -13,6 +13,7 @@
     --c-text: #f7f2f3;
     --c-halftext: color-mix(in oklab, var(--c-text) 100%, var(--c-back) 30%);
     --c-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 10%);
+    --c-light-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 30%);
     --c-popover: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 13%);
     --c-popover-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 20%);
     --c-popover-hover: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 10%);
@@ -495,4 +496,18 @@ g {
 
 .data-section > h2, .options-section > h2 {
     margin-bottom: var(--s-md);
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.h2-button {
+    color: #d693aa;
+    cursor: pointer;
+}
+
+.h2-button:not(:hover) {
+    text-decoration: underline;
 }

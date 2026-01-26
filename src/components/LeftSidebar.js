@@ -132,7 +132,17 @@ function LeftSidebar() {
             {
                 class: 'paths-wrapper',
                 children: [
-                    {tag: 'h2', children: 'Paths', key: 'header'},
+                    {
+                        class: 'flex-between',
+                        key: 'header',
+                        children: [
+                            {tag: 'h2', children: 'Paths', key: 'header'},
+                            ...(context.selectedPath ? [{tag: 'h2', class: 'h2-button', key: 'deselect-paths', children: `Deselect path`, on: {click() {
+                                context.selectedPath = null;
+                                context.commit();
+                            }}}] : [])
+                        ]
+                    },
                     PathList(),
                     NewButton
                 ]

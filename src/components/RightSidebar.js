@@ -24,7 +24,21 @@ function RightSidebar() {
                 key: `options-${context.selectedPath['data-name']}`,
                 class: 'options-section',
                 children: [
-                    {tag: 'h2', children: 'Options'},
+                    {
+                        class: 'flex-between',
+                        children: [
+                            {tag: 'h2', children: 'Options'},
+                            {tag: 'h2', class: 'h2-button', children: `Set default`, on: {click() {
+                                context.defaultPath = {
+                                    'stroke-linecap': context.selectedPath['stroke-linecap'],
+                                    'stroke-linejoin': context.selectedPath['stroke-linejoin'],
+                                    'fill': context.selectedPath['fill'],
+                                    'stroke-width': context.selectedPath['stroke-width'],
+                                };
+                                context.commit();
+                            }}}
+                        ]
+                    },
                     {class: 'option-wrapper', children: [                    
                         'Line cap',
                         SegmentedControl(
