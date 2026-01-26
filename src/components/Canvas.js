@@ -1,6 +1,6 @@
 import context from "../utils/context.js";
 import { selectPath } from "../utils/path.js";
-import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType } from "../utils/d.js";
+import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, commandify, getCommandsTranslatedBy } from "../utils/d.js";
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
@@ -31,7 +31,8 @@ function fixRect(rect) {
     return rect;
 }
 
-function pointMousedownListener(thisArg, command, xIndex = null) {
+function pointMousedownListener(thisArg, commandId, xIndex = null) {
+    const command = context.selectedPath.d.find(c => c.id === commandId);
     thisArg.state.selectedPointCommand = command;
     thisArg.state.xIndex = xIndex ?? command.args.length - 2;
     thisArg.state.selectedPointCommandOriginalArgs = [...command.args];
@@ -50,14 +51,20 @@ function Canvas() {
                         xIndex: -1,
                         selectedPointCommandOriginalArgs: [],
                         svgBindingRect: null,
-                        plusCommandId: -1
+                        plusCommandId: -1,
+
+                        translatingPathName: null,
+                        translatingPathStartCoords: null,
+                        translatingPathOffsets: null,
+                        translatingPathStartD: null
                     };
                 },
                 render() {
                     return {
                         ...context.iconSVG,
                         dataset: {
-                            dragging: !!this.state.selectedPointCommand
+                            dragging: !!this.state.selectedPointCommand,
+                            translating: !!this.state.translatingPathName
                         },
                         children: [
                             // grid
@@ -72,7 +79,18 @@ function Canvas() {
                                 on: {click() { 
                                     selectPath(context.icon.children
                                         .find(child => child['data-name'] === path['data-name'])) 
-                                    }}
+                                    },
+                                    mousedown(e) {
+                                        this.state.translatingPathName = path['data-name'];
+                                        this.state.translatingPathStartD = context.icon.children.find(c => c['data-name'] === path['data-name']).d;
+                                        this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                        const xProportion = (e.clientX - this.state.svgBindingRect.left) / this.state.svgBindingRect.width, yProportion = (e.clientY - this.state.svgBindingRect.top) / this.state.svgBindingRect.height;
+                                        const xPos = xProportion * context.icon.width, 
+                                            yPos = yProportion * context.icon.height;
+                                        this.state.translatingPathStartCoords = {x: xPos, y: yPos};
+                                        this.state.translatingPathOffsets = {x: 0, y: 0};
+                                    }
+                                }
                                 })
                             ),
 
@@ -165,19 +183,19 @@ function Canvas() {
                                     const coords = isolateCoordsFromAbsoluteCmd(command, context.selectedPath.d);
                                     const endpoint = {...Point(coords, 'full'), key: `endpoint${command.id}`, on: {
                                         mousedown() {
-                                            pointMousedownListener(this, command);
+                                            pointMousedownListener(this, command.id);
                                         }
                                     }};
                                     if (command.type === 'C' || command.type === 'Q') {
                                         const startControl = {...Point({x: command.args[0], y: command.args[1]}, 'outline'), key: `startcontrol${command.id}`, on: {
                                             mousedown() {
-                                                pointMousedownListener(this, command, 0);
+                                                pointMousedownListener(this, command.id, 0);
                                             }
                                         }};
                                         if (command.type === 'Q') return [startControl, endpoint];
                                         const endControl = {...Point({x: command.args[2], y: command.args[3]}, 'outline'), key: `endcontrol${command.id}`, on: {
                                             mousedown() {
-                                                pointMousedownListener(this, command, 2);
+                                                pointMousedownListener(this, command.id, 2);
                                             }
                                         }};
                                         return [startControl, endControl, endpoint];
@@ -198,17 +216,35 @@ function Canvas() {
                                         this.state.selectedPointCommand.args[this.state.xIndex + 1] = yPos;
                                         this.rerender();
                                     }
+                                } else if (this.state.translatingPathName) {
+                                    const xProportion = (e.clientX - this.state.svgBindingRect.left) / this.state.svgBindingRect.width, yProportion = (e.clientY - this.state.svgBindingRect.top) / this.state.svgBindingRect.height;
+                                    const xPos = xProportion * context.icon.width, 
+                                        yPos = yProportion * context.icon.height;
+                                    const dx = Math.round(xPos - this.state.translatingPathStartCoords.x),
+                                        dy = Math.round(yPos - this.state.translatingPathStartCoords.y);
+                                    if (dx !== this.state.translatingPathOffsets.x || dy !== this.state.translatingPathOffsets.y) {
+                                        this.state.translatingPathOffsets = {x: dx, y: dy};
+                                        this.state.translatingPathStartD;
+                                        context.icon.children.find(c => c['data-name'] === this.state.translatingPathName).d = getCommandsTranslatedBy(this.state.translatingPathStartD, {x: dx, y: dy});
+                                        this.rerender();
+                                    }
                                 }
                             },
                             mouseup(e) {
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
                                     context.commit();
+                                } else if (this.state.translatingPathName) {
+                                    this.state.translatingPathName = null;
+                                    context.commit();
                                 }
                             },
                             mouseleave(e) {
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
+                                    context.commit();
+                                } else if (this.state.translatingPathName) {
+                                    this.state.translatingPathName = null;
                                     context.commit();
                                 }
                             }

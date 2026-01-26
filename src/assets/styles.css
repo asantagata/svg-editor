@@ -494,6 +494,10 @@ g {
     cursor: grabbing;
 }
 
+#canvas-wrapper > svg[data-translating=true], #canvas-wrapper > svg[data-translating=true] * {
+    cursor: move;
+}
+
 .data-section > h2, .options-section > h2 {
     margin-bottom: var(--s-md);
 }
