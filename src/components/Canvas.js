@@ -76,9 +76,10 @@ function Canvas() {
                                 key: `path-${path['data-name']}`,
                                 stroke: context.selectedPath && context.selectedPath['data-name'] === path['data-name']
                                     ? highlightedPathColor : 'currentColor',
-                                on: {click() { 
-                                    selectPath(context.icon.children
-                                        .find(child => child['data-name'] === path['data-name'])) 
+                                on: {click() {
+                                    if (this.state.translatingPathName !== path['data-name'])
+                                        selectPath(context.icon.children
+                                            .find(child => child['data-name'] === path['data-name'])) 
                                     },
                                     mousedown(e) {
                                         this.state.translatingPathName = path['data-name'];
@@ -230,7 +231,7 @@ function Canvas() {
                                     }
                                 }
                             },
-                            mouseup(e) {
+                            click(e) {
                                 if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
                                     context.commit();
