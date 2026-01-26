@@ -64,7 +64,7 @@ export default function CommandArguments(command) {
                     class: 'input-flex', 
                     children: [
                         LabelledInput('Angle', NumberInputShorthand(command, 2, '0°')),
-                        SegmentedControlShorthand(command, 3, ['sweepOn', 'sweepOff']),
+                        SegmentedControlShorthand(command, 3, ['smallArc', 'largeArc']),
                         SegmentedControlShorthand(command, 4, ['clockwise', 'counterclockwise']),
                     ]
                 },
