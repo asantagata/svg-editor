@@ -515,3 +515,24 @@ g {
 .h2-button:not(:hover) {
     text-decoration: underline;
 }
+
+#demos {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: var(--s-md);
+}
+
+.demo {
+    flex-shrink: 0;
+    background: var(--c-popover);
+}
+
+.demo.filled {
+    background: var(--c-accent);
+}
+
+.demo > svg {
+    width: 100%;
+    height: 100%;
+}
