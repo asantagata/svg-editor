@@ -20,7 +20,8 @@ const context = {
         context.rerender();
     },
     iconSVG: {tag: 'svg', xmlns: "http://www.w3.org/2000/svg", children: []},
-    name: 'my-icon'
+    name: 'my-icon',
+    modal: null
 };
 
 export default context;

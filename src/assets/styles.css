@@ -18,6 +18,7 @@
     --c-popover-border: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 20%);
     --c-popover-hover: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 10%);
     --c-popover-active: color-mix(in oklab, var(--c-back) 100%, var(--c-text) 5%);
+    --c-lightpink: #d693aa;
     font-size: small;
     --s-sm: 0.25rem;
     --s-md: 0.5rem;
@@ -512,7 +513,7 @@ g {
 }
 
 .h2-button {
-    color: #d693aa;
+    color: var(--c-lightpink);
     cursor: pointer;
 }
 
@@ -581,4 +582,33 @@ g {
 
 .check-button.clicked > * {
     transform: translateY(calc(-1 * (var(--s-lg) + var(--s-md))));
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-button {
+    color: var(--c-lightpink);
+}
+
+#modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100dvw;
+    height: 100dvh;
+    overflow: hidden;
+    background: #0002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal {
+    background: var(--c-back);
+    box-shadow: 0 0 10px #0008;
+    border-radius: var(--s-md);
+    padding: var(--s-md);
 }

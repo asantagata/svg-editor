@@ -2,6 +2,8 @@ import context from "./utils/context.js";
 import LeftSidebar from "./components/LeftSidebar.js";
 import Canvas from "./components/Canvas.js";
 import RightSidebar from "./components/RightSidebar.js";
+import FileModal from "./components/FileModal.js";
+import PropertiesModal from "./components/PropertiesModal.js";
 
 const App = {
     state() {
@@ -14,7 +16,19 @@ const App = {
             children: [
                 LeftSidebar(),
                 Canvas(),
-                RightSidebar()
+                RightSidebar(),
+                ...(context.modal ? [{
+                    id: 'modal-wrapper',
+                    on: {click(e) {
+                        if (e.target !== this.target) return;
+                        context.modal = null;
+                        context.rerender();
+                    }},
+                    children: {
+                        ...(context.modal === 'properties' ? PropertiesModal() : FileModal()),
+                        id: 'modal'
+                    }
+                }] : [])
             ],
             on: {
                 click(e) {

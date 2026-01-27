@@ -129,7 +129,22 @@ function LeftSidebar() {
         id: 'left-sidebar',
         children: [
             {
-                children: 'SVG Editor'
+                children: [
+                    {children: 'SVG Editor'},
+                    {
+                        class: 'modal-buttons',
+                        children: [
+                            {tag: 'h2', class: 'h2-button', on: {click() {
+                                context.modal = 'properties';
+                                context.rerender();
+                            }}, children: 'SVG properties'},
+                            {tag: 'h2', class: 'h2-button', on: {click() {
+                                context.modal = 'saved';
+                                context.rerender();
+                            }}, children: 'Saved SVGs'},
+                        ]
+                    }
+                ]
             },
             {
                 class: 'paths-wrapper',
