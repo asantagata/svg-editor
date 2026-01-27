@@ -1,6 +1,6 @@
 import context from "./context.js";
 
-const defaultPathD = {
+export const defaultPathD = {
     'Path': () => [{type: 'M', args: [10, 10], id: 0}, {type: 'L', args: [14, 14], id: 1}],
     'Circle': () => [{type:'M',args:[12,1], id: 0},{type:'A',args:[11,11,0,1,0,12,23], id: 1},{type:'A',args:[11,11,0,1,0,12,1], id: 2},{type:'Z',args:[], id: 3}],
     'Square': () => [{type:'M',args:[1,1], id: 0},{type:'L',args:[23,1], id: 1},{type:'L',args:[23,23], id: 2},{type:'L',args:[1,23], id: 3},{type:'Z',args:[], id: 4}],
