@@ -612,3 +612,7 @@ g {
     border-radius: var(--s-md);
     padding: var(--s-md);
 }
+
+#canvas-wrapper > svg > path[data-name] {
+    cursor: move;
+}
