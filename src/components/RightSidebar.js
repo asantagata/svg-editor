@@ -22,7 +22,7 @@ function RightSidebar() {
             },
             {
                 key: `options-${context.selectedPath['data-name']}`,
-                class: 'options-section',
+                class: 'options-section sidebar-section',
                 children: [
                     {
                         class: 'flex-between',

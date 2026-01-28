@@ -169,12 +169,14 @@ function LeftSidebar() {
                 ]
             },
             {
+                class: 'sidebar-section',
                 children: [
                     {tag: 'h2', children: 'Demos'},
                     Demos()
                 ]
             },
             {
+                class: 'sidebar-section',
                 children: [
                     {tag: 'h2', children: 'Exports'},
                     Exports()

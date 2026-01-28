@@ -269,10 +269,6 @@ svg {
     gap: var(--s-md);
 }
 
-.option-wrapper + .option-wrapper {
-    margin-top: var(--s-md);
-}
-
 .segmented-control {
     background: var(--c-dark);
     display: flex;
@@ -659,4 +655,10 @@ td:last-child {
 
 .file-info:not(.openable-file-info) > .delete-td {
     display: none;
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
 }
