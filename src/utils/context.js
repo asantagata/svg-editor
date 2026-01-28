@@ -1,11 +1,12 @@
 import { getIconSVG } from "./svg.js";
 import { defaultPathD } from "./path.js";
+import { getID, putSVGInDB } from "./persistence.js";
 
 const defaultPath = {
     'stroke-linecap': 'round',
     'stroke-linejoin': 'round',
     'fill': 'none',
-    'stroke-width': 1,
+    'stroke-width': 2,
 };
 
 const context = {
@@ -23,12 +24,15 @@ const context = {
     commit: () => {
         context.iconSVG = getIconSVG();
         context.rerender();
+        queueMicrotask(putSVGInDB);
     },
     iconSVG: {},
     name: 'my-icon',
-    modal: null
+    id: getID(),
+    modal: null,
+    saves: null
 };
 
-context.iconSVG = getIconSVG(context);
+context.iconSVG = getIconSVG(context.icon);
 
 export default context;

@@ -612,8 +612,49 @@ g {
     box-shadow: 0 0 10px #0008;
     border-radius: var(--s-md);
     padding: var(--s-md);
+    max-width: calc(100dvw - 20dvh);
+    max-height: 80dvh;
+    overflow: auto;
 }
 
 #canvas-wrapper > svg > path[data-name] {
     cursor: move;
+}
+
+table {
+    border-spacing: 0;
+}
+
+td {
+    padding: var(--s-md);
+}
+
+td:first-child {
+    border-top-left-radius: var(--s-md);
+    border-bottom-left-radius: var(--s-md);
+}
+
+td:last-child {
+    border-top-right-radius: var(--s-md);
+    border-bottom-right-radius: var(--s-md);
+}
+
+.file-data {
+    min-width: 20ch;
+}
+
+.openable-file-info {
+    cursor: pointer;
+}
+
+.openable-file-info:hover td {
+    background: var(--c-popover-hover);
+}
+
+.openable-file-info:active td {
+    background: var(--c-popover);
+}
+
+.file-info:not(.openable-file-info) > .delete-td {
+    display: none;
 }

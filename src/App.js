@@ -22,6 +22,7 @@ const App = {
                     on: {click(e) {
                         if (e.target !== this.target) return;
                         context.modal = null;
+                        context.saves = null;
                         context.rerender();
                     }},
                     children: {

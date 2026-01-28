@@ -3,6 +3,7 @@ import { addPath, selectPath } from "../utils/path.js";
 import SVGs from "./SVGs.js";
 import Demos from "./Demos.js";
 import Exports from "./Exports.js";
+import { getAllFromDB } from "../utils/persistence.js";
 
 function PathList() {
     if (context.icon.children.length) {
@@ -139,8 +140,11 @@ function LeftSidebar() {
                                 context.rerender();
                             }}, children: 'SVG properties'},
                             {tag: 'h2', class: 'h2-button', on: {click() {
-                                context.modal = 'saved';
-                                context.rerender();
+                                getAllFromDB().then(r => {
+                                    context.saves = r;
+                                    context.modal = 'saved';
+                                    context.rerender();
+                                });
                             }}, children: 'Saved SVGs'},
                         ]
                     }
