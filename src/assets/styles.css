@@ -531,6 +531,7 @@ g {
 .demo {
     flex-shrink: 0;
     background: var(--c-popover);
+    padding: var(--s-md);
 }
 
 .demo.filled {
