@@ -1,6 +1,6 @@
 import context from "../utils/context.js";
 import { selectPath } from "../utils/path.js";
-import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, translateCommandBy } from "../utils/d.js";
+import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, translateCommandBy, stringify } from "../utils/d.js";
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
@@ -17,7 +17,6 @@ const dashedPath = {
     'stroke-linejoin': 'round',
     'stroke-width': overlayPathWidth,
     stroke: overlayPathColor + 'C0',
-    key: 'overlay-selected-path-controls',
     'stroke-dasharray': '0.2 0.2'
 };
 
@@ -132,6 +131,7 @@ function Canvas() {
 
                                 {
                                     ...dashedPath,
+                                    key: 'overlay-selected-path-controls',
                                     d: context.selectedPath.d.map((command, index, commands) => {
                                         if (index === 0) return '';
                                         if (command.type === 'C' || command.type === 'Q') {
@@ -217,17 +217,27 @@ function Canvas() {
                                 const center = getCircleCenter(context.selectedPath);
                                 const right = getCircleRight(context.selectedPath);
                                 return [
-                                    {...dashedPath, d: `M${center.x} ${center.y}L${right.x} ${right.y}`},
-                                    {...Point(center, 'full'), on: {mousedown() {
+                                    {...dashedPath, key: 'dashed-circle-line', d: `M${center.x} ${center.y}L${right.x} ${right.y}`},
+                                    {...Point(center, 'full'), key: 'circle-center', on: {mousedown() {
                                         this.state.selectedPointCommand = 'circle-center';
                                         this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                     }}},
-                                    {...Point(right, 'outline'), on: {mousedown() {
+                                    {...Point(right, 'outline'), key: 'circle-right', on: {mousedown() {
                                         this.state.selectedPointCommand = 'circle-right';
                                         this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                     }}}
                                 ];
-                            })() : []) : [])
+                            })() : [
+                                {...dashedPath, key: 'rect-path', d: stringify(context.selectedPath.d)},
+                                {...Point({x: context.selectedPath.d[0].args[0], y: context.selectedPath.d[0].args[1]}, 'full'), on: {mousedown() {
+                                    this.state.selectedPointCommand = 'rect-topleft';
+                                    this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                }}},
+                                {...Point({x: context.selectedPath.d[2].args[0], y: context.selectedPath.d[2].args[1]}, 'full'), on: {mousedown() {
+                                    this.state.selectedPointCommand = 'rect-bottomright';
+                                    this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                }}},
+                            ]) : [])
                         ],
                         on: {
                             mousemove(e) {
@@ -248,6 +258,26 @@ function Canvas() {
                                             const right = getCircleRight(context.selectedPath);
                                             if (xPos !== right.x) {
                                                 setCircleRight(context.selectedPath, xPos);
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        case 'rect-topleft': {
+                                            const args = context.selectedPath.d[0].args;
+                                            if (xPos !== args[0] || yPos !== args[1]) {
+                                                context.selectedPath.d[0].args = [xPos, yPos];
+                                                context.selectedPath.d[1].args[1] = yPos;
+                                                context.selectedPath.d[3].args[0] = xPos;
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        case 'rect-bottomright': {
+                                            const args = context.selectedPath.d[2].args;
+                                            if (xPos !== args[0] || yPos !== args[1]) {
+                                                context.selectedPath.d[2].args = [xPos, yPos];
+                                                context.selectedPath.d[1].args[0] = xPos;
+                                                context.selectedPath.d[3].args[1] = yPos;
                                                 this.rerender();
                                             }
                                             break;
