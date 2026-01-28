@@ -16,7 +16,16 @@ function RightSidebar() {
                 key: `data-${context.selectedPath['data-name']}`,
                 class: 'data-section',
                 children: [
-                    {tag: 'h2', children: 'Data'},
+                    {
+                        class: 'flex-between',
+                        children: [
+                            {tag: 'h2', children: 'Data'},
+                            ...(context.selectedPath['data-type'] === 'square' || context.selectedPath['data-type'] === 'circle' ? [{tag: 'h2', class: 'h2-button', children: 'Make path', on: {click() {
+                                context.selectedPath['data-type'] = 'path';
+                                context.commit();
+                            }}}] : [])
+                        ]
+                    },
                     CommandList(context.selectedPath.d)
                 ]
             },
