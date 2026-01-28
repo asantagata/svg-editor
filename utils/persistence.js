@@ -46,7 +46,7 @@ export async function getAllFromDB() {
     return new Promise((resolve, reject) => {
         const tx = db.transaction(NAME, "readonly");
         const req = tx.objectStore(NAME).getAll();
-        req.onsuccess = () => resolve(req.result);
+        req.onsuccess = () => resolve(req.result.sort((a, b) => b.lastModified - a.lastModified));
         req.onerror = () => reject(req.error);
     });
 }

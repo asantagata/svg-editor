@@ -14,7 +14,7 @@ function RightSidebar() {
             children: 'No path selected'
         } : [{
                 key: `data-${context.selectedPath['data-name']}`,
-                class: 'data-section',
+                class: 'data-section sidebar-section',
                 children: [
                     {
                         class: 'flex-between',
