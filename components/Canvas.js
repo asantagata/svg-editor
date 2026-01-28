@@ -5,10 +5,21 @@ import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
 import { selectCommandFromList } from "./CommandList.js";
+import { getCircleCenter, getCircleRight, setCircleCenter, setCircleRight } from "../utils/special-path.js";
 
 const highlightedPathColor = '#D693AA';
 const overlayPathColor = '#EACCD6';
 const overlayPathWidth = '0.1';
+const dashedPath = {
+    tag: 'path', 
+    xmlns: 'http://www.w3.org/2000/svg', 
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': overlayPathWidth,
+    stroke: overlayPathColor + 'C0',
+    key: 'overlay-selected-path-controls',
+    'stroke-dasharray': '0.2 0.2'
+};
 
 function fixRect(rect) {
     if (rect.width > rect.height) {
@@ -57,7 +68,7 @@ function Canvas() {
                         translatingPathStartCoords: null,
                         translatingPathOffsets: null,
                         translatingPathStartD: null,
-                        prospectiveTranslatingPathName: null
+                        prospectiveTranslatingPathName: null,
                     };
                 },
                 render() {
@@ -100,8 +111,10 @@ function Canvas() {
                                 })
                             ),
 
-                            // underline path
-                            ...(context.selectedPath ? [
+                            ...(context.selectedPath ? 
+                                ((context.selectedPath['data-type'] === 'path' || context.selectedPath['data-type'] === 'bone') ? [
+                                    
+                                // underline path
                                 {
                                     tag: 'path', 
                                     xmlns: 'http://www.w3.org/2000/svg', 
@@ -118,14 +131,7 @@ function Canvas() {
                                 },
 
                                 {
-                                    tag: 'path', 
-                                    xmlns: 'http://www.w3.org/2000/svg', 
-                                    'stroke-linecap': 'round',
-                                    'stroke-linejoin': 'round',
-                                    'stroke-width': overlayPathWidth,
-                                    stroke: overlayPathColor + 'C0',
-                                    key: 'overlay-selected-path-controls',
-                                    'stroke-dasharray': '0.2 0.2',
+                                    ...dashedPath,
                                     d: context.selectedPath.d.map((command, index, commands) => {
                                         if (index === 0) return '';
                                         if (command.type === 'C' || command.type === 'Q') {
@@ -207,7 +213,21 @@ function Canvas() {
                                         return [startControl, endControl, endpoint];
                                     } else return endpoint;
                                 })
-                            ] : [])
+                            ] : context.selectedPath['data-type'] === 'circle' ? (() => {
+                                const center = getCircleCenter(context.selectedPath);
+                                const right = getCircleRight(context.selectedPath);
+                                return [
+                                    {...dashedPath, d: `M${center.x} ${center.y}L${right.x} ${right.y}`},
+                                    {...Point(center, 'full'), on: {mousedown() {
+                                        this.state.selectedPointCommand = 'circle-center';
+                                        this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                    }}},
+                                    {...Point(right, 'outline'), on: {mousedown() {
+                                        this.state.selectedPointCommand = 'circle-right';
+                                        this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                    }}}
+                                ];
+                            })() : []) : [])
                         ],
                         on: {
                             mousemove(e) {
@@ -215,12 +235,30 @@ function Canvas() {
                                     const xProportion = (e.clientX - this.state.svgBindingRect.left) / this.state.svgBindingRect.width, yProportion = (e.clientY - this.state.svgBindingRect.top) / this.state.svgBindingRect.height;
                                     const xPos = Math.round(xProportion * context.icon.width), 
                                         yPos = Math.round(yProportion * context.icon.height);
-                                    const currentX = this.state.selectedPointCommand.args[this.state.xIndex],
-                                        currentY = this.state.selectedPointCommand.args[this.state.xIndex + 1];
-                                    if (xPos !== currentX || yPos !== currentY) {
-                                        this.state.selectedPointCommand.args[this.state.xIndex] = xPos;
-                                        this.state.selectedPointCommand.args[this.state.xIndex + 1] = yPos;
-                                        this.rerender();
+                                    switch (this.state.selectedPointCommand) {
+                                        case 'circle-center': {
+                                            const center = getCircleCenter(context.selectedPath);
+                                            if (xPos !== center.x || yPos !== center.y) {
+                                                setCircleCenter(context.selectedPath, {x: xPos, y: yPos});
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        case 'circle-right': {
+                                            const right = getCircleRight(context.selectedPath);
+                                            if (xPos !== right.x) {
+                                                setCircleRight(context.selectedPath, xPos);
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        default: {
+                                            if (xPos !== this.state.selectedPointCommand.args[this.state.xIndex] || yPos !== this.state.selectedPointCommand.args[this.state.xIndex + 1]) {
+                                                this.state.selectedPointCommand.args[this.state.xIndex] = xPos;
+                                                this.state.selectedPointCommand.args[this.state.xIndex + 1] = yPos;
+                                                this.rerender();
+                                            }
+                                        }
                                     }
                                 } else if (this.state.translatingPathName) {
                                     const xProportion = (e.clientX - this.state.svgBindingRect.left) / this.state.svgBindingRect.width, yProportion = (e.clientY - this.state.svgBindingRect.top) / this.state.svgBindingRect.height;
@@ -249,8 +287,8 @@ function Canvas() {
                                 }
                             },
                             mouseleave(e) {
-                                if (this.state.selectedPointCommand) {
                                 this.state.prospectiveTranslatingPathName = null;
+                                if (this.state.selectedPointCommand) {
                                     this.state.selectedPointCommand = null;
                                     context.commit();
                                 } else if (this.state.translatingPathName) {
