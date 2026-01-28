@@ -8,6 +8,10 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
             }
         },
         render() {
+            if (this.element) {
+                // prevent stale values
+                this.bindings.input.element.valueAsNumber = getValue();
+            }
             return {
                 class: 'number-input-wrapper',
                 children: [

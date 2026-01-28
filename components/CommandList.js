@@ -1,6 +1,6 @@
 import { insertCommand, setCommandType } from "../utils/d.js";
 import context from "../utils/context.js";
-import CommandArguments from "./CommandArguments.js";
+import CommandArguments, { SpecialCommandArguments } from "./CommandArguments.js";
 import Dropdown from "./input/Dropdown.js";
 import SVGs from "./SVGs.js";
 
@@ -88,7 +88,7 @@ export default function CommandList(d) {
     return {
         class: 'command-list',
         id: 'command-list',
-        children: d.flatMap((command, i) => [
+        children: context.selectedPath['data-type'] === 'circle' || context.selectedPath['data-type'] === 'square' ? {class: 'command', children: SpecialCommandArguments(context.selectedPath['data-type'], context.selectedPath)} : d.flatMap((command, i) => [
             CommandItem(command, i),
             NewCommandBar(i)
         ])

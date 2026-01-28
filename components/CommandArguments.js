@@ -2,6 +2,7 @@ import NumberInput from "./input/NumberInput.js";
 import SVGs from "./SVGs.js";
 import SegmentedControl from "./input/SegmentedControl.js";
 import context from "../utils/context.js";
+import { getCircleCenter, getCircleRadius, setCircleCenter, setCircleRadius } from "../utils/special-path.js";
 
 function SegmentedControlShorthand(command, index, svgKeys) {
     return SegmentedControl(
@@ -35,7 +36,6 @@ function PointInput(command, xIndex, yIndex) {
 
 function LabelledInput(label, input) {
     return {
-        class: '',
         children: [
             {tag: 'label', children: label},
             input
@@ -74,13 +74,71 @@ export default function CommandArguments(command) {
     };
 }
 
-
-/**
-    command.args.map((a, i) => NumberInput(
-        () => a,
-        (value) => {
-            command.args[i] = value;
-            context.commit();
+export function SpecialCommandArguments(type, path) {
+    if (type === 'circle') {
+        return {
+            class: 'command-arguments',
+            children: [
+                LabelledInput('Center', {class: 'point-input',
+                children: ['(', NumberInput(
+                    () => getCircleCenter(path).x,
+                    (value) => {
+                        setCircleCenter(path, {x: value, y: getCircleCenter(path).y})
+                        context.commit();
+                    }
+                ), {children: ',', class: 'point-comma'}, NumberInput(
+                    () => getCircleCenter(path).y,
+                    (value) => {
+                        setCircleCenter(path, {y: value, x: getCircleCenter(path).x})
+                        context.commit();
+                    }
+                ), ')']}),
+                LabelledInput('Radius', NumberInput(
+                    () => getCircleRadius(path),
+                    (value) => {
+                        setCircleRadius(path, value);
+                        context.commit();
+                    },
+                    {min: 0}
+                ))
+            ]
         }
-    ))
- */
+    } else {
+        return {
+            class: 'command-arguments',
+            children: [
+                LabelledInput('Corner', {class: 'point-input',
+                children: ['(', NumberInput(
+                    () => path.d[0].args[0],
+                    (value) => {
+                        path.d[0].args[0] = value;
+                        path.d[3].args[0] = value;
+                        context.commit();
+                    }
+                ), {children: ',', class: 'point-comma'}, NumberInput(
+                    () => path.d[0].args[1],
+                    (value) => {
+                        path.d[0].args[1] = value;
+                        path.d[1].args[1] = value;
+                        context.commit();
+                    }
+                ), ')']}),LabelledInput('Corner', {class: 'point-input',
+                children: ['(', NumberInput(
+                    () => path.d[2].args[0],
+                    (value) => {
+                        path.d[2].args[0] = value;
+                        path.d[1].args[0] = value;
+                        context.commit();
+                    }
+                ), {children: ',', class: 'point-comma'}, NumberInput(
+                    () => path.d[2].args[1],
+                    (value) => {
+                        path.d[2].args[1] = value;
+                        path.d[3].args[1] = value;
+                        context.commit();
+                    }
+                ), ')']}),
+            ]
+        }
+    }
+}
