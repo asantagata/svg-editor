@@ -1,6 +1,6 @@
 import context from "../utils/context.js";
 import { selectPath } from "../utils/path.js";
-import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, commandify, getCommandsTranslatedBy } from "../utils/d.js";
+import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, translateCommandBy } from "../utils/d.js";
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
@@ -229,9 +229,8 @@ function Canvas() {
                                     const dx = Math.round(xPos - this.state.translatingPathStartCoords.x),
                                         dy = Math.round(yPos - this.state.translatingPathStartCoords.y);
                                     if (dx !== this.state.translatingPathOffsets.x || dy !== this.state.translatingPathOffsets.y) {
+                                        context.icon.children.find(c => c['data-name'] === this.state.translatingPathName).d.forEach(cmd => translateCommandBy(cmd, {x: dx - this.state.translatingPathOffsets.x, y: dy - this.state.translatingPathOffsets.y}));
                                         this.state.translatingPathOffsets = {x: dx, y: dy};
-                                        this.state.translatingPathStartD;
-                                        context.icon.children.find(c => c['data-name'] === this.state.translatingPathName).d = getCommandsTranslatedBy(this.state.translatingPathStartD, {x: dx, y: dy});
                                         this.rerender();
                                     }
                                 }

@@ -204,13 +204,9 @@ export function fixCommands(commands) {
     return commands;
 }
 
-export function getCommandsTranslatedBy(commands, offsets) {
-    return commands.map(cmd => {
-        const args = [...cmd.args];
-        for (const xPointIndex of cmdPointArgs[cmd.type]) {
-            args[xPointIndex] += offsets.x;
-            args[xPointIndex + 1] += offsets.y;
-        }
-        return {...cmd, args};
-    });
+export function translateCommandBy(command, offsets) {
+    for (const xPointIndex of cmdPointArgs[command.type]) {
+        command.args[xPointIndex] += offsets.x;
+        command.args[xPointIndex + 1] += offsets.y;
+    }
 }
