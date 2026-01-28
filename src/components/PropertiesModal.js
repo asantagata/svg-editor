@@ -7,6 +7,16 @@ export default function FileModal() {
             {
                 class: 'option-wrapper',
                 children: [
+                    'Name',
+                    {tag: 'input', type: 'text', value: context.name, placeholder: 'my-file', on: {change(e) {
+                        context.name = e.target.value;
+                        context.commit();
+                    }}}
+                ]
+            },
+            {
+                class: 'option-wrapper',
+                children: [
                     'Width',
                     NumberInput(() => context.icon.width, (val) => {
                         context.icon.width = val; context.commit();

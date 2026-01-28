@@ -266,6 +266,7 @@ svg {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--s-md);
 }
 
 .option-wrapper + .option-wrapper {
@@ -300,6 +301,7 @@ svg {
 }
 
 input[type=number], input[type=text] {
+    font-family: inherit;
     background: var(--c-dark);
     padding: var(--s-md);
     border-radius: var(--s-md);
