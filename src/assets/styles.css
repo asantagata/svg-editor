@@ -599,7 +599,7 @@ g {
     width: 100dvw;
     height: 100dvh;
     overflow: hidden;
-    background: #0002;
+    background: #0004;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -613,9 +613,12 @@ g {
     max-width: calc(100dvw - 20dvh);
     max-height: 80dvh;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
 }
 
-#canvas-wrapper > svg > path[data-name] {
+#canvas-wrapper > svg[data-dragging=false] > path[data-name] {
     cursor: move;
 }
 
