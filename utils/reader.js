@@ -23,23 +23,24 @@ export function uploadSVG() {
 
 function identifyNearestProperty(shape, property) {
     do {
-        if (shape.getAttribute(property)) {
-            return shape.getAttribute(property);
+        const value = getStylableProperty(shape, property);
+        if (value !== null) {
+            return value;
         }
         shape = shape.parentElement;
     } while (shape);
 }
 
 function svgWidthAndHeight(svg) {
-    if (svg.hasAttribute('width') && svg.hasAttribute('height')) {
-        return {width: parseFloat(svg.getAttribute('width')), height: parseFloat(svg.getAttribute('height'))}
-    } else if (svg.hasAttribute('viewBox')) {
-        const entries = svg.getAttribute('viewBox').split(/(,| +|, +)/).map(parseFloat);
+    if (getStylableProperty(svg, 'width') && getStylableProperty(svg, 'height')) {
+        return {width: parseFloat(getStylableProperty(svg, 'width')), height: parseFloat(getStylableProperty(svg, 'height'))}
+    } else if (getStylableProperty(svg, 'viewBox')) {
+        const entries = getStylableProperty(svg, 'viewBox').split(/(,| +|, +)/).map(parseFloat);
         return {width: entries[2], height: entries[3]};
-    } else if (svg.hasAttribute('width')) {
-        return {width: parseFloat(svg.getAttribute('width')), height: parseFloat(svg.getAttribute('width'))}
-    } else if (svg.hasAttribute('height')) {
-        return {width: parseFloat(svg.getAttribute('height')), height: parseFloat(svg.getAttribute('height'))}
+    } else if (getStylableProperty(svg, 'width')) {
+        return {width: parseFloat(getStylableProperty(svg, 'width')), height: parseFloat(getStylableProperty(svg, 'width'))}
+    } else if (getStylableProperty(svg, 'height')) {
+        return {width: parseFloat(getStylableProperty(svg, 'height')), height: parseFloat(getStylableProperty(svg, 'height'))}
     } else {
         return {width: 24, height: 24};
     }
@@ -69,6 +70,7 @@ function SVGStringtoFRUIT(svg) {
         })(),
         fill: (() => {
             const fill = identifyNearestProperty(shape, 'fill');
+            console.log(shape, fill);
             if (!fill || fill.trim().toLowerCase() === 'none') return 'none';
             return 'currentColor';
         })()
@@ -76,14 +78,30 @@ function SVGStringtoFRUIT(svg) {
     return {...icon, children: paths};
 }
 
+function getStylableProperty(shape, property, placeholder = null) {
+    if (shape.style?.getPropertyValue(property)) return shape.style.getPropertyValue(property);
+    if (shape.hasAttribute(property)) return shape.getAttribute(property);
+    else return placeholder;
+}
+
+function getStylableNumericProperty(shape, property, placeholder = null) {
+    if (shape.style?.getPropertyValue(property)) {
+        console.log(shape, property, 'style');
+        const value = parseFloat(shape.style.getPropertyValue(property));
+        if (Number.isNaN(value)) return placeholder;
+        return value;
+    } if (shape.hasAttribute(property)) {
+        console.log(shape, property, 'attribute');
+        const value = parseFloat(shape.getAttribute(property));
+        if (Number.isNaN(value)) return placeholder;
+        return value;
+    } else return placeholder;
+}
+
 function getArgs(obj, shape) {
-    return Object.fromEntries(Object.keys(obj).map(key => {
-        if (shape.hasAttribute(key)) {
-            const value = parseFloat(shape.getAttribute(key));
-            if (parseFloat.isNaN(value)) return [key, obj[key]];
-            return [key, value];
-        } else return [key, obj[key]];
-    }));
+    return Object.fromEntries(Object.keys(obj).map(key => 
+        [key, getStylableNumericProperty(shape, key, obj[key])]
+    ));
 }
 
 function getCommands(shape) {
@@ -123,7 +141,6 @@ function getCommands(shape) {
                 type: i === 0 ? 'M' : 'L',
                 args: [points[i * 2], points[i * 2 + 1]]
             }));
-            console.log(commands[0].args, points);
             if (shape.tagName.toLowerCase() === 'polyline') return commands;
             return [...commands, {type: 'Z', args: []}];
         }

@@ -220,12 +220,10 @@ const resizePointArgs = {...cmdPointArgs, a: [0, 5], A: [0, 5]};
 export function resizeSVGToFit(svg, width, height) {
     const ratio = Math.min(width / svg.width, height / svg.height);
     svg.width *= ratio, svg.height *= ratio;
-    console.log(ratio, svg.width, svg.height);
     svg.children.forEach(path => {
         path['stroke-width'] *= ratio;
         path.d.forEach(cmd => resizePointArgs[cmd.type].forEach(index => {
             cmd.args[index] *= ratio, cmd.args[index + 1] *= ratio;
         }))
     });
-    console.log(svg);
 }
