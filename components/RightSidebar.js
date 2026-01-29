@@ -20,7 +20,7 @@ function RightSidebar() {
                         class: 'flex-between',
                         children: [
                             {tag: 'h2', children: 'Data'},
-                            ...(context.selectedPath['data-type'] === 'square' || context.selectedPath['data-type'] === 'circle' ? [{tag: 'h2', class: 'h2-button', children: 'Make path', on: {click() {
+                            ...(context.selectedPath['data-type'] === 'rectangle' || context.selectedPath['data-type'] === 'circle' ? [{tag: 'h2', class: 'h2-button', children: 'Make path', on: {click() {
                                 context.selectedPath['data-type'] = 'path';
                                 context.commit();
                             }}}] : [])
@@ -59,7 +59,7 @@ function RightSidebar() {
                             [
                                 {label: SVGs.linecapButt, value: 'butt'},
                                 {label: SVGs.linecapRound, value: 'round'},
-                                {label: SVGs.linecapSquare, value: 'square'},
+                                {label: SVGs.linecapRectangle, value: 'rectangle'},
                             ]
                         )
                     ]},
@@ -98,8 +98,8 @@ function RightSidebar() {
                                 context.commit();
                             },
                             [
-                                {label: SVGs.square, value: 'none'},
-                                {label: SVGs.squareFilled, value: 'currentColor'},
+                                {label: SVGs.rectangle, value: 'none'},
+                                {label: SVGs.rectangleFilled, value: 'currentColor'},
                             ]
                         )
                     ]},
