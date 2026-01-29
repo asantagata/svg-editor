@@ -4,6 +4,8 @@ import NumberInput from "./input/NumberInput.js";
 import SVGs from "./SVGs.js";
 import CommandList from "./CommandList.js";
 
+const specialPathTypes = new Set(['circle', 'rectangle', 'polygon']);
+
 function RightSidebar() {
     return {
         class: 'sidebar',
@@ -20,7 +22,7 @@ function RightSidebar() {
                         class: 'flex-between',
                         children: [
                             {tag: 'h2', children: 'Data'},
-                            ...(context.selectedPath['data-type'] === 'rectangle' || context.selectedPath['data-type'] === 'circle' ? [{tag: 'h2', class: 'h2-button', children: 'Make path', on: {click() {
+                            ...(specialPathTypes.has(context.selectedPath['data-type']) ? [{tag: 'h2', class: 'h2-button', children: 'Make path', on: {click() {
                                 context.selectedPath['data-type'] = 'path';
                                 context.commit();
                             }}}] : [])

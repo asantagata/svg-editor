@@ -1,6 +1,6 @@
 import SVGs from "../SVGs.js";
 
-export default function NumberInput(getValue, onChange = () => {}, {min = '', max = '', step = '0.01', showSpinButtons = true, placeholder = ''} = {}) {
+export default function NumberInput(getValue, onChange = () => {}, {min = '', max = '', step = '', showSpinButtons = true, placeholder = ''} = {}) {
     return {
         state() {
             return {
@@ -25,7 +25,7 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
                         on: {
                             change(e) {
                                 const n = e.target.valueAsNumber;
-                                if ((min === '' || n >= min) && (max === '' || n <= max)) {
+                                if ((min === '' || n >= min) && (max === '' || n <= max) && (step === '' || n % step === 0)) {
                                     this.state.lastSafeValue = n;
                                     e.target.value = n;
                                     onChange(n);

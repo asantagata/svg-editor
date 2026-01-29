@@ -70,7 +70,6 @@ function SVGStringtoFRUIT(svg) {
         })(),
         fill: (() => {
             const fill = identifyNearestProperty(shape, 'fill');
-            console.log(shape, fill);
             if (!fill || fill.trim().toLowerCase() === 'none') return 'none';
             return 'currentColor';
         })()
@@ -86,12 +85,10 @@ function getStylableProperty(shape, property, placeholder = null) {
 
 function getStylableNumericProperty(shape, property, placeholder = null) {
     if (shape.style?.getPropertyValue(property)) {
-        console.log(shape, property, 'style');
         const value = parseFloat(shape.style.getPropertyValue(property));
         if (Number.isNaN(value)) return placeholder;
         return value;
     } if (shape.hasAttribute(property)) {
-        console.log(shape, property, 'attribute');
         const value = parseFloat(shape.getAttribute(property));
         if (Number.isNaN(value)) return placeholder;
         return value;

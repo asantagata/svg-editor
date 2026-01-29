@@ -5,7 +5,10 @@ import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
 import Point from "./svg/Point.js";
 import { selectCommandFromList } from "./CommandList.js";
-import { getCircleCenter, getCircleRight, setCircleCenter, setCircleRight } from "../utils/special-path.js";
+import { 
+    getCircleCenter, getCircleRight, setCircleCenter, setCircleRight,
+    getPolygonCenter, getPolygonBottom, getPolygonSideRadius, setPolygonCenter, setPolygonSideRadius
+} from "../utils/special-path.js";
 
 const highlightedPathColor = '#D693AA';
 const overlayPathColor = '#EACCD6';
@@ -19,6 +22,10 @@ const dashedPath = {
     stroke: overlayPathColor + 'C0',
     'stroke-dasharray': '0.2 0.2'
 };
+
+function approxEqual(a, b, tol = 1e-3) {
+    return Math.abs(a - b) <= tol;
+}
 
 function fixRect(rect) {
     if (rect.width > rect.height) {
@@ -227,17 +234,31 @@ function Canvas() {
                                         this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                     }}}
                                 ];
-                            })() : [
+                            })() : context.selectedPath['data-type'] === 'rectangle' ? [
                                 {...dashedPath, key: 'rect-path', d: stringify(context.selectedPath.d)},
-                                {...Point({x: context.selectedPath.d[0].args[0], y: context.selectedPath.d[0].args[1]}, 'full'), on: {mousedown() {
+                                {...Point({x: context.selectedPath.d[0].args[0], y: context.selectedPath.d[0].args[1]}, 'full'), key: 'rect-topleft', on: {mousedown() {
                                     this.state.selectedPointCommand = 'rect-topleft';
                                     this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                 }}},
-                                {...Point({x: context.selectedPath.d[2].args[0], y: context.selectedPath.d[2].args[1]}, 'full'), on: {mousedown() {
+                                {...Point({x: context.selectedPath.d[2].args[0], y: context.selectedPath.d[2].args[1]}, 'full'), key: 'rect-bottomright', on: {mousedown() {
                                     this.state.selectedPointCommand = 'rect-bottomright';
                                     this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                 }}},
-                            ]) : [])
+                            ] : (() => {
+                                const center = getPolygonCenter(context.selectedPath);
+                                const bottom = getPolygonBottom(context.selectedPath);
+                                return [
+                                    {...dashedPath, key: 'dashed-polygon-line', d: `M${center.x} ${center.y}L${bottom.x} ${bottom.y}`},
+                                    {...Point(center, 'full'), key: 'polygon-center', on: {mousedown() {
+                                        this.state.selectedPointCommand = 'polygon-center';
+                                        this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                    }}},
+                                    {...Point(bottom, 'outline'), key: 'polygon-bottom', on: {mousedown() {
+                                        this.state.selectedPointCommand = 'polygon-bottom';
+                                        this.state.svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                    }}}
+                                ];
+                            })()) : [])
                         ],
                         on: {
                             mousemove(e) {
@@ -278,6 +299,24 @@ function Canvas() {
                                                 context.selectedPath.d[2].args = [xPos, yPos];
                                                 context.selectedPath.d[1].args[0] = xPos;
                                                 context.selectedPath.d[3].args[1] = yPos;
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        case 'polygon-center': {
+                                            const center = getPolygonCenter(context.selectedPath);
+                                            if (!approxEqual(xPos, center.x) || !approxEqual(yPos !== center.y)) {
+                                                setPolygonCenter(context.selectedPath, {x: xPos, y: yPos});
+                                                this.rerender();
+                                            }
+                                            break;
+                                        }
+                                        case 'polygon-bottom': {
+                                            const center = getPolygonCenter(context.selectedPath);
+                                            const oldSideRadius = getPolygonSideRadius(context.selectedPath);
+                                            const newSideRadius = Math.abs(yPos - center.y);
+                                            if (!approxEqual(oldSideRadius, newSideRadius)) {
+                                                setPolygonSideRadius(context.selectedPath, newSideRadius);
                                                 this.rerender();
                                             }
                                             break;

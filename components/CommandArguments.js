@@ -2,7 +2,9 @@ import NumberInput from "./input/NumberInput.js";
 import SVGs from "./SVGs.js";
 import SegmentedControl from "./input/SegmentedControl.js";
 import context from "../utils/context.js";
-import { getCircleCenter, getCircleRadius, setCircleCenter, setCircleRadius } from "../utils/special-path.js";
+import { getCircleCenter, getCircleRadius, setCircleCenter, setCircleRadius,
+    getPolygonCenter, setPolygonCenter, getPolygonSideRadius, setPolygonSideRadius, getPolygonSidecount, setPolygonSidecount
+ } from "../utils/special-path.js";
 
 function SegmentedControlShorthand(command, index, svgKeys) {
     return SegmentedControl(
@@ -103,6 +105,42 @@ export function SpecialCommandArguments(type, path) {
                 ))
             ]
         }
+    } else if (type === 'polygon') {
+        return {
+            class: 'command-arguments',
+            children: [
+                LabelledInput('Center', {class: 'point-input',
+                children: ['(', NumberInput(
+                    () => getPolygonCenter(path).x,
+                    (value) => {
+                        setPolygonCenter(path, {x: value, y: getPolygonCenter(path).y})
+                        context.commit();
+                    }
+                ), {children: ',', class: 'point-comma'}, NumberInput(
+                    () => getPolygonCenter(path).y,
+                    (value) => {
+                        setPolygonCenter(path, {y: value, x: getPolygonCenter(path).x})
+                        context.commit();
+                    }
+                ), ')']}),
+                LabelledInput('Radius', NumberInput(
+                    () => getPolygonSideRadius(path),
+                    (value) => {
+                        setPolygonSideRadius(path, value);
+                        context.commit();
+                    },
+                    {min: 0}
+                )),
+                LabelledInput('# Sides', NumberInput(
+                    () => getPolygonSidecount(path),
+                    (value) => {
+                        setPolygonSidecount(path, value);
+                        context.commit();
+                    },
+                    {min: 3, step: 1}
+                ))
+            ]
+        };
     } else {
         return {
             class: 'command-arguments',

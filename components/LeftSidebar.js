@@ -119,7 +119,8 @@ const NewButton = {
             hidden: true,
             children: [
                 {tag: 'button', on: {click() {addPath('Circle')}}, innerHTML: `${SVGs.circle} Add circle`},
-                {tag: 'button', on: {click() {addPath('Square')}}, innerHTML: `${SVGs.square} Add square`},
+                {tag: 'button', on: {click() {addPath('Rectangle')}}, innerHTML: `${SVGs.rectangle} Add rectangle`},
+                {tag: 'button', on: {click() {addPath('Polygon')}}, innerHTML: `${SVGs.polygon} Add polygon`},
                 {tag: 'button', on: {click() {addPath('Bone')}}, innerHTML: `${SVGs.bone} Add bone`},
                 {tag: 'button', on: {click() {
                     getAllFromDB().then(r => {
