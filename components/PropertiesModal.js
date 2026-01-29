@@ -1,7 +1,7 @@
 import context from "../utils/context.js";
 import NumberInput from "./input/NumberInput.js";
 
-export default function FileModal() {
+export default function PropertiesModal() {
     return {
         children: [
             {

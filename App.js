@@ -26,7 +26,7 @@ const App = {
                         context.rerender();
                     }},
                     children: {
-                        ...(context.modal === 'properties' ? PropertiesModal() : FileModal()),
+                        ...(context.modal === 'properties' ? PropertiesModal() : FileModal(context.modal === 'additive')),
                         id: 'modal'
                     }
                 }] : [])

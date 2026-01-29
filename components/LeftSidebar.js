@@ -118,7 +118,14 @@ const NewButton = {
             children: [
                 {tag: 'button', on: {click() {addPath('Circle')}}, innerHTML: `${SVGs.circle} Add circle`},
                 {tag: 'button', on: {click() {addPath('Square')}}, innerHTML: `${SVGs.square} Add square`},
-                {tag: 'button', on: {click() {addPath('Bone')}}, innerHTML: `${SVGs.bone} Add bone`}
+                {tag: 'button', on: {click() {addPath('Bone')}}, innerHTML: `${SVGs.bone} Add bone`},
+                {tag: 'button', on: {click() {
+                    getAllFromDB().then(r => {
+                        context.saves = r;
+                        context.modal = 'additive';
+                        context.rerender();
+                    });
+                }}, innerHTML: `${SVGs.document} Add from saved`}
             ]
         }
     ]
