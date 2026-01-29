@@ -65,7 +65,7 @@ export default function FileModal(additive = false) {
                             context.selectedPath = null;
                             context.modal = null;
                             context.saves = null;
-                            context.rerender();
+                            context.commit();
                         }
                     }}
                 })) : {class: 'no', style: {padding: '5dvh'}, children: 'No SVGs saved'}
