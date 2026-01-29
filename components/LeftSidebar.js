@@ -1,9 +1,11 @@
 import context from "../utils/context.js";
-import { addPath, selectPath } from "../utils/path.js";
+import { addPath, selectPath, getPathName } from "../utils/path.js";
 import SVGs from "./SVGs.js";
 import Demos from "./Demos.js";
 import Exports from "./Exports.js";
 import { getAllFromDB } from "../utils/persistence.js";
+import { uploadSVG } from "../utils/reader.js";
+import { resizeSVGToFit } from "../utils/d.js";
 
 function PathList() {
     if (context.icon.children.length) {
@@ -125,7 +127,17 @@ const NewButton = {
                         context.modal = 'additive';
                         context.rerender();
                     });
-                }}, innerHTML: `${SVGs.document} Add from saved`}
+                }}, innerHTML: `${SVGs.document} Add from saved`},
+                {tag: 'button', on: {click() {
+                    uploadSVG().then(svg => {
+                        resizeSVGToFit(svg, context.icon.width, context.icon.height);
+                        svg.children.forEach(p => {
+                            const newPath = {...p, 'data-name': getPathName(p['data-type'])};
+                            context.icon.children.push(newPath);
+                        });
+                        context.commit();
+                    });
+                }}, innerHTML: `${SVGs.upload} Upload from device`}
             ]
         }
     ]

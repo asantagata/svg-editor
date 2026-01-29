@@ -1,21 +1,27 @@
 import context from "./context.js";
 
-function tokenize(d) {
+export function tokenize(d) {
     let token = '', tokens = [], tokenHasPeriod = false;
     if (d.length === 0) return tokens;
     for (const char of d) {
         const codePoint = char.codePointAt(0);
-        if ((codePoint >= 65 && codePoint <= 90) || (codePoint >= 97 && codePoint <= 122)) { // alphabetical
+        if ((codePoint >= 48 && codePoint <= 57) || codePoint === 69 || codePoint === 101) { // numeric
+            token += char;
+        } else if ((codePoint >= 65 && codePoint <= 90) || (codePoint >= 97 && codePoint <= 122)) { // alphabetical
             if (token)
                 tokens.push(token);
             tokens.push(char);
             token = '';
             tokenHasPeriod = false;
         } else if (codePoint === 45) { // -
-            if (token)
-                tokens.push(token);
-            token = char;
-            tokenHasPeriod = false;
+            if (token && token.endsWith('e') || token.endsWith('E')) {
+                token += char;
+            } else {
+                if (token)
+                    tokens.push(token);
+                token = char;
+                tokenHasPeriod = false;
+            }
         } else if (codePoint === 46) { // .
             if (tokenHasPeriod) {
                 tokens.push(token);
@@ -24,8 +30,6 @@ function tokenize(d) {
                 token += char;
             }
             tokenHasPeriod = true;
-        } else if (codePoint >= 48 && codePoint <= 57) { // numeric
-            token += char;
         } else { // whitespace, comma, mystery
             if (token)
                 tokens.push(token)
@@ -54,9 +58,9 @@ export function commandify(d) {
         } else {
             if (command.args.length === argc[command.type]) {
                 commands.push(command);
-                command = {type: command.type, args: [+token]};
-            } else {            
-                command.args.push(+token);
+                command = {type: command.type === 'M' ? 'L' : command.type === 'm' ? 'l' : command.type, args: [parseFloat(token)]};
+            } else {
+                command.args.push(parseFloat(token));
             }
         }
     }
@@ -156,7 +160,7 @@ export function isolateCoordsFromAbsoluteCmd(command, commands) {
 export function fixCommands(commands) {
     let coords = {x: 0, y: 0};
     if (commands[0]?.type?.toUpperCase() !== 'M')
-        commands.splice(0, 0, {type: 'M', args: [0, 0]}); // must always start with M
+        commands.unshift({type: 'M', args: [0, 0]}); // must always start with M
     for (let i = 0; i < commands.length; i++) {
         const cmd = commands[i];
 
@@ -188,7 +192,7 @@ export function fixCommands(commands) {
             cmd.args.splice(0, 0, 2*coords.x - prevEndControlPoint.x, 2*coords.y - prevEndControlPoint.y);
         }
 
-        // fix coords, H,V -> M
+        // fix coords, H,V -> L
         if (cmd.type === 'Z') {
             coords = {x: commands[0].args[0], y: commands[0].args[1]};
         } else {
@@ -196,7 +200,7 @@ export function fixCommands(commands) {
             if (cmd.args[lastXCoordIndex] !== undefined) coords.x = cmd.args[lastXCoordIndex];
             if (cmd.args[lastYCoordIndex] !== undefined) coords.y = cmd.args[lastYCoordIndex];
             if (cmd.type === 'H' || cmd.type === 'V') {
-                cmd.type = 'M';
+                cmd.type = 'L';
                 cmd.args = [coords.x, coords.y];
             }
         }
@@ -209,4 +213,19 @@ export function translateCommandBy(command, offsets) {
         command.args[xPointIndex] += offsets.x;
         command.args[xPointIndex + 1] += offsets.y;
     }
+}
+
+const resizePointArgs = {...cmdPointArgs, a: [0, 5], A: [0, 5]};
+
+export function resizeSVGToFit(svg, width, height) {
+    const ratio = Math.min(width / svg.width, height / svg.height);
+    svg.width *= ratio, svg.height *= ratio;
+    console.log(ratio, svg.width, svg.height);
+    svg.children.forEach(path => {
+        path['stroke-width'] *= ratio;
+        path.d.forEach(cmd => resizePointArgs[cmd.type].forEach(index => {
+            cmd.args[index] *= ratio, cmd.args[index + 1] *= ratio;
+        }))
+    });
+    console.log(svg);
 }
