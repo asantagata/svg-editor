@@ -1,5 +1,9 @@
 import SVGs from "../SVGs.js";
 
+function stringify(n) {
+    return Number(n.toFixed(2));
+}
+
 export default function NumberInput(getValue, onChange = () => {}, {min = '', max = '', step = '', showSpinButtons = true, placeholder = ''} = {}) {
     return {
         state() {
@@ -10,7 +14,7 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
         render() {
             if (this.element) {
                 // prevent stale values
-                this.bindings.input.element.valueAsNumber = getValue();
+                this.bindings.input.element.valueAsNumber = stringify(getValue());
             }
             return {
                 class: 'number-input-wrapper',
@@ -20,18 +24,18 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
                         binding: 'input',
                         type: 'number',
                         autocomplete: 'false',
-                        value: `${getValue()}`,
+                        value: stringify(getValue()),
                         min, max, step, placeholder,
                         on: {
                             change(e) {
                                 const n = e.target.valueAsNumber;
-                                if ((min === '' || n >= min) && (max === '' || n <= max) && (step === '' || n % step === 0)) {
+                                if (!Number.isNaN(n) && (min === '' || n >= min) && (max === '' || n <= max) && (step === '' || n % step === 0)) {
                                     this.state.lastSafeValue = n;
-                                    e.target.value = n;
+                                    e.target.value = stringify(n);
                                     onChange(n);
                                 } else {
                                     e.preventDefault();
-                                    e.target.value = this.state.lastSafeValue;
+                                    e.target.value = stringify(this.state.lastSafeValue);
                                 }
                             }
                         }
@@ -46,7 +50,7 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
                                     const n = this.bindings.input.element.valueAsNumber + 1;
                                     if (max === '' || n <= max) {
                                         this.state.lastSafeValue = n;
-                                        this.bindings.input.element.value = n;
+                                        this.bindings.input.element.value = stringify(n);
                                         onChange(n);
                                     }
                                 }}
@@ -58,7 +62,7 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
                                     const n = this.bindings.input.element.valueAsNumber - 1;
                                     if (min === '' || n >= min) {
                                         this.state.lastSafeValue = n;
-                                        this.bindings.input.element.value = n;
+                                        this.bindings.input.element.value = stringify(n);
                                         onChange(n);
                                     }
                                 }}
