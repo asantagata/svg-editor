@@ -90,7 +90,7 @@ export default function CommandList(d) {
     return {
         class: 'command-list',
         id: 'command-list',
-        children: specialPathTypes.has(context.selectedPath['data-type']) ? {class: 'command', children: SpecialCommandArguments(context.selectedPath['data-type'], context.selectedPath)} : d.flatMap((command, i) => [
+        children: specialPathTypes.has(context.selectedPath['data-type']) ? {class: 'command', key: 'special-command', children: SpecialCommandArguments(context.selectedPath['data-type'], context.selectedPath)} : d.flatMap((command, i) => [
             CommandItem(command, i),
             NewCommandBar(i)
         ])
