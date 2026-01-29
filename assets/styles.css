@@ -120,6 +120,7 @@ button {
     align-items: center;
     text-align: center;
     justify-content: center;
+    gap: var(--s-md);
 }
 
 .multi-button > button:not(:first-child, #path-list > .multi-button > button) {
@@ -701,4 +702,11 @@ td:last-child {
     display: flex;
     flex-direction: column;
     gap: var(--s-md);
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }

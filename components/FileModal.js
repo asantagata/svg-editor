@@ -1,7 +1,7 @@
-import context from "../utils/context.js";
+import context, { getDefaultIcon,getDefaultPath } from "../utils/context.js";
 import { getIconSVG } from "../utils/svg.js";
 import SVGs from "./SVGs.js";
-import { deleteFromDB } from "../utils/persistence.js";
+import { deleteFromDB, getID } from "../utils/persistence.js";
 import { getPathName } from "../utils/path.js";
 
 function getDateString(lastModified) {
@@ -24,7 +24,24 @@ function getDateString(lastModified) {
 
 export default function FileModal(additive = false) {
     return {
-        children: {
+        children: [
+            ...(additive ? [] : [
+                {
+                    class: 'center',
+                    children: {tag: 'button', innerHTML: `${SVGs.plus} New`, on: {click() {
+                        context.icon = {...getDefaultIcon(), children: []};
+                        context.iconSVG = getIconSVG();
+                        context.lastModified = Date.now();
+                        context.name = 'my-icon';
+                        context.defaultPath = getDefaultPath();
+                        context.id = getID();
+                        context.modal = null;
+                        context.saves = null;
+                        context.rerender();
+                    }}}
+                }
+            ]),
+            {
             tag: 'table',
             children: {
                 tag: 'tbody',
@@ -70,6 +87,6 @@ export default function FileModal(additive = false) {
                     }}
                 })) : {class: 'no', style: {padding: '5dvh'}, children: 'No SVGs saved'}
             }
-        }
+        }]
     };
 }
