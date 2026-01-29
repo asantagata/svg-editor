@@ -1,4 +1,6 @@
 import { commandify, tokenize, fixCommands } from "./d.js";
+import context from "./context.js";
+import { getIconSVG } from "./svg.js";
 
 export function uploadSVG() {
     return new Promise((resolve, reject) => {
@@ -11,7 +13,7 @@ export function uploadSVG() {
             const reader = new FileReader();
             reader.readAsText(file, 'UTF-8');
             reader.onload = function({ target }) {
-                resolve(SVGStringtoFRUIT(target.result));
+                SVGStringtoFRUIT(target.result, resolve, reject);
             }
             reader.onerror = function() {
                 reject('Unable to read file.');
@@ -23,7 +25,9 @@ export function uploadSVG() {
 
 export function pasteSVG() {
     return new Promise((resolve, reject) => {
-        navigator.clipboard.readText().then(text => resolve(SVGStringtoFRUIT(text)));
+        navigator.clipboard.readText().then(text => {
+            SVGStringtoFRUIT(text, resolve, reject);
+        });
     });
 }
 
@@ -52,35 +56,67 @@ function svgWidthAndHeight(svg) {
     }
 }
 
-function SVGStringtoFRUIT(svg) {
-    const parent = document.createElement('div');
-    parent.innerHTML = svg;
-    const element = parent.children[0];
-    const icon = {
-        tag: 'svg', xmlns: "http://www.w3.org/2000/svg",
-        fill: "none", stroke: "currentColor",
-        ...svgWidthAndHeight(element)
-    };
-    const paths = Array.from(element.querySelectorAll('circle, ellipse, polygon, polyline, path, rect')).map(shape => ({
-        tag: 'path', 
-        'data-type': 'path', 
-        xmlns: "http://www.w3.org/2000/svg",
-        // name tbd
-        d: getCommands(shape).map((cmd, id) => ({...cmd, id})),
-        'stroke-linejoin': identifyNearestProperty(shape, 'stroke-linejoin') ?? 'round',
-        'stroke-linecap': identifyNearestProperty(shape, 'stroke-linecap') ?? 'round',
-        'stroke-width': (() => {
-            const width = identifyNearestProperty(shape, 'stroke-width');
-            if (width && parseFloat(width)) return parseFloat(width);
-            return 2;
-        })(),
-        fill: (() => {
-            const fill = identifyNearestProperty(shape, 'fill');
-            if (!fill || fill.trim().toLowerCase() === 'none') return 'none';
-            return 'currentColor';
-        })()
-    }));
-    return {...icon, children: paths};
+function SVGStringtoFRUIT(svg, resolve, reject) {
+    try {
+        const parent = document.createElement('div');
+        parent.innerHTML = svg;
+        const element = parent.children[0];
+        const icon = {
+            tag: 'svg', xmlns: "http://www.w3.org/2000/svg",
+            fill: "none", stroke: "currentColor",
+            ...svgWidthAndHeight(element)
+        };
+        const paths = Array.from(element.querySelectorAll('circle, ellipse, polygon, polyline, path, rect')).map(shape => ({
+            tag: 'path', 
+            'data-type': 'path', 
+            xmlns: "http://www.w3.org/2000/svg",
+            // name tbd
+            d: getCommands(shape).map((cmd, id) => ({...cmd, id})),
+            'stroke-linejoin': identifyNearestProperty(shape, 'stroke-linejoin') ?? 'round',
+            'stroke-linecap': identifyNearestProperty(shape, 'stroke-linecap') ?? 'round',
+            'stroke-width': (() => {
+                const width = identifyNearestProperty(shape, 'stroke-width');
+                if (width && parseFloat(width)) return parseFloat(width);
+                return 2;
+            })(),
+            fill: (() => {
+                const fill = identifyNearestProperty(shape, 'fill');
+                if (!fill || fill.trim().toLowerCase() === 'none') return 'none';
+                return 'currentColor';
+            })()
+        }));
+        const result = {...icon, children: paths};
+        if (/transform|<defs|\Wrx\W|\Wry\W/.test(svg)) {
+            context.modal = 'warning';
+            context.warning = {
+                body: [
+                    {children: `The SVG was found to have unsupported features and may not have been imported successfully. Do you wish to import this SVG?`},
+                    {class: 'svg-wrapper', children: getIconSVG(result)}
+                ],
+                button: {
+                    text: 'OK',
+                    onClick: () => resolve(result)
+                },
+                leftButton: {
+                    text: 'Cancel',
+                    onClick: () => reject(null)
+                }
+            };
+            context.rerender();
+        } else {
+            resolve(result);
+        }
+    } catch (e) {
+        context.modal = 'warning';
+        context.warning = {
+            body: `The SVG could not be processed. Try uploading it as a .svg file.`,
+            button: {
+                text: 'OK',
+                onClick: () => reject(null)
+            }
+        };
+        context.rerender();
+    }
 }
 
 function getStylableProperty(shape, property, placeholder = null) {

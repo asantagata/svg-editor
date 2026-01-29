@@ -129,10 +129,10 @@ const NewButton = {
                     });
                 }}, innerHTML: `${SVGs.document} Add from saved`},
                 {tag: 'button', on: {click() {
-                    uploadSVG().then(addImportedSVGPaths);
+                    uploadSVG().then(addImportedSVGPaths, () => {});
                 }}, innerHTML: `${SVGs.upload} Upload from device`},
                 {tag: 'button', on: {click() {
-                    pasteSVG().then(addImportedSVGPaths);
+                    pasteSVG().then(addImportedSVGPaths, () => {});
                 }}, innerHTML: `${SVGs.clipboard} Paste`}
             ]
         }

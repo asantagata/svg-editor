@@ -618,6 +618,43 @@ g {
     gap: var(--s-md);
 }
 
+#modal.warning-modal {
+    max-width: min(calc(100dvw - 40dvh), 60dvw);
+}
+
+#modal.warning-modal > .warning-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
+    min-height: 0;
+}
+
+.svg-wrapper {
+    display: flex;
+    justify-content: center;
+    min-height: 20dvh;
+}
+
+.svg-wrapper > svg {
+    width: unset;
+    height: unset;
+    max-width: 100%;
+    max-height: 100%;
+    background: var(--c-popover);
+}
+
+.default-right:has(> *:first-child:last-child) {
+    justify-content: end;
+}
+
+.warning-modal .cancel-button { background: var(--c-popover); }
+.warning-modal .cancel-button:hover { background: var(--c-popover-hover); }
+.warning-modal .cancel-button:active { background: var(--c-popover-active); }
+
+.warning-modal button {
+    flex-grow: 0;
+}
+
 #canvas-wrapper > svg[data-dragging=false] > path[data-name] {
     cursor: move;
 }

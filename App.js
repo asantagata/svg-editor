@@ -4,6 +4,7 @@ import Canvas from "./components/Canvas.js";
 import RightSidebar from "./components/RightSidebar.js";
 import FileModal from "./components/FileModal.js";
 import PropertiesModal from "./components/PropertiesModal.js";
+import WarningModal from "./components/WarningModal.js";
 
 const App = {
     state() {
@@ -26,7 +27,7 @@ const App = {
                         context.rerender();
                     }},
                     children: {
-                        ...(context.modal === 'properties' ? PropertiesModal() : FileModal(context.modal === 'additive')),
+                        ...(context.modal === 'properties' ? PropertiesModal() : context.modal === 'warning' ? WarningModal() : FileModal(context.modal === 'additive')),
                         id: 'modal'
                     }
                 }] : [])

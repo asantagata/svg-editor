@@ -30,7 +30,8 @@ const context = {
     name: 'my-icon',
     id: getID(),
     modal: null,
-    saves: null
+    saves: null,
+    warning: null
 };
 
 context.iconSVG = getIconSVG(context.icon);
