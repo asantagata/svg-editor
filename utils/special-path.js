@@ -47,6 +47,8 @@ function bisector(P, Q) {
 }
 
 export function getPolygonCenter(path) {
+    if (path.d.every(c => c.args.length === 0 || c.args[0] === path.d[0].args[0] && c.args[1] === path.d[0].args[1])) 
+        return {x: path.d[0].args[0], y: path.d[0].args[1]};
     const A = path.d[0];
     const B = path.d[1];
     const C = path.d[2];
@@ -79,9 +81,10 @@ export function getPolygonCornerRadius(path) {
 }
 
 function getPolygonPoints(center, nPoints, cornerRadius) {
+    if (cornerRadius === 0) return Array.from({length: nPoints}, () => ({...center}));
     const angle = (nPoints % 2 === 1 ? Math.PI / 2 : (nPoints % 4 === 0 ? 1 : 2) * Math.PI / nPoints) + Math.PI;
     const rotx = Math.cos(angle), roty = Math.sin(angle);
-    const points = Array.from({length: nPoints}, (_, i) => {
+    return Array.from({length: nPoints}, (_, i) => {
         const value = 2 * Math.PI * (nPoints % 2 === 1 ? -i - Math.floor(nPoints / 2) : (nPoints % 4 === 0 ? 0 : -1) - i - Math.floor(nPoints / 4)) / nPoints;
         const sin = Math.sin(value), cos = Math.cos(value);
         return {
@@ -89,8 +92,6 @@ function getPolygonPoints(center, nPoints, cornerRadius) {
             y: center.y + (rotx * sin + roty * cos) * cornerRadius
         };
     });
-    const maxY = Math.max(...points.map(p => p.y));
-    return points;
 }
 
 export function setPolygonCenter(path, center) {
