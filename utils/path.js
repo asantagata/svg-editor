@@ -1,4 +1,5 @@
 import context from "./context.js";
+import { resizeSVGToFit } from "./d.js";
 
 export const defaultPathD = {
     'Path': () => [{type: 'M', args: [10, 10], id: 0}, {type: 'L', args: [14, 14], id: 1}],
@@ -30,5 +31,14 @@ export function selectPath(p) {
     if (context.selectedPath === p) return;
     context.selectedPath = p;
     context.selectedPathCommandIds = Array.from({length: p})
+    context.commit();
+}
+
+export function addImportedSVGPaths(svg) {
+    resizeSVGToFit(svg, context.icon.width, context.icon.height);
+    svg.children.forEach(p => {
+        const newPath = {...p, 'data-name': getPathName(p['data-type'])};
+        context.icon.children.push(newPath);
+    });
     context.commit();
 }

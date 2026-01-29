@@ -21,6 +21,12 @@ export function uploadSVG() {
     });
 }
 
+export function pasteSVG() {
+    return new Promise((resolve, reject) => {
+        navigator.clipboard.readText().then(text => resolve(SVGStringtoFRUIT(text)));
+    });
+}
+
 function identifyNearestProperty(shape, property) {
     do {
         const value = getStylableProperty(shape, property);
