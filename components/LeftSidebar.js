@@ -20,7 +20,7 @@ function PathList() {
                         tag: 'button',
                         innerHTML: `${SVGs[p['data-type']]} ${p['data-name']}`,
                         on: {click() {
-                            selectPath(p);
+                            selectPath(context.icon.children.find(c => c['data-name'] === p['data-name']));
                         }}
                     },
                     ...(context.icon.children.length > 1 && p === context.selectedPath ? [{
