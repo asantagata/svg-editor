@@ -78,7 +78,7 @@ function PathList() {
                         title: 'Delete',
                         innerHTML: SVGs.delete,
                         on: {click() {
-                            if (p['data-name'] === context.selectedPath['data-name'])
+                            if (p['data-name'] === context.selectedPath?.['data-name'])
                                 context.selectedPath = null;
                             context.icon.children = context.icon.children.filter(c => c['data-name'] !== p['data-name']);
                             context.commit();
