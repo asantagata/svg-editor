@@ -369,7 +369,7 @@ function Canvas() {
                                 }
                             },
                             dblclick(e) {
-                                if (e.target.closest('svg > *:not([data-gridline=true])')) return;
+                                if (e.target.closest('svg > *:not([data-gridline=true])') || !e.target.closest('svg')) return;
                                 const svgBindingRect = fixRect(this.element.getBoundingClientRect());
                                 const xProportion = (e.clientX - svgBindingRect.left) / svgBindingRect.width, yProportion = (e.clientY - svgBindingRect.top) / svgBindingRect.height;
                                 const xPos = Math.round(xProportion * context.icon.width), 
