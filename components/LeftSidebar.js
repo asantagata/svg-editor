@@ -67,7 +67,7 @@ function PathList() {
                         title: 'Copy',
                         innerHTML: SVGs.copy,
                         on: {click() {
-                            addPath(p['data-type'][0].toUpperCase() + p['data-type'].slice(1), p);
+                            addPath(p['data-type'][0].toUpperCase() + p['data-type'].slice(1), {cloneFrom: p});
                         }}
                     },
                     {

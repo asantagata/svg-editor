@@ -2,7 +2,7 @@ import context from "./context.js";
 import { resizeSVGToFit } from "./d.js";
 
 export const defaultPathD = {
-    'Path': () => [{type: 'M', args: [10, 10], id: 0}, {type: 'L', args: [14, 14], id: 1}],
+    'Path': ({x, y} = {x: 10, y: 10}) => [{type: 'M', args: [x, y], id: 0}, {type: 'L', args: [x + 4, y + 4], id: 1}],
     'Circle': () => [{type:'M',args:[12,1], id: 0},{type:'A',args:[11,11,0,1,0,12,23], id: 1},{type:'A',args:[11,11,0,1,0,12,1], id: 2},{type:'Z',args:[], id: 3}],
     'Rectangle': () => [{type:'M',args:[1,1], id: 0},{type:'L',args:[23,1], id: 1},{type:'L',args:[23,23], id: 2},{type:'L',args:[1,23], id: 3},{type:'Z',args:[], id: 4}],
     'Polygon': () => [{type: 'M', args: [5.53436, 20.89919], id: 0}, {type: 'L', args: [18.46564, 20.89919], id: 1}, {type: 'L', args: [22.461625278697305, 8.600811892343172], id: 2}, {type: 'L', args: [12, 1], id: 3}, {type: 'L', args: [1.5383747213026862, 8.60081189234317], id: 4}, {type: 'Z', args: [], id: 5}],
@@ -19,9 +19,9 @@ export function getPathName(type = 'Path') {
     }
 }
 
-export function addPath(type = 'Path', cloneFrom = null) {
+export function addPath(type = 'Path', {cloneFrom, startCoord} = {cloneFrom: null, startCoord: null}) {
     const name = getPathName(type);
-    const newPath = cloneFrom ? window.structuredClone(cloneFrom) : {...context.defaultPath, tag: 'path', 'data-type': type.toLowerCase(), 'd': defaultPathD[type]()};
+    const newPath = cloneFrom ? window.structuredClone(cloneFrom) : {...context.defaultPath, tag: 'path', 'data-type': type.toLowerCase(), 'd': startCoord ? defaultPathD[type](startCoord) : defaultPathD[type]()};
     newPath['data-name'] = name;
     context.icon.children.push(newPath);
     selectPath(newPath);

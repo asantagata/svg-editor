@@ -1,5 +1,5 @@
 import context from "../utils/context.js";
-import { selectPath } from "../utils/path.js";
+import { selectPath, addPath } from "../utils/path.js";
 import { isolateCoordsFromAbsoluteCmd, insertCommand, setCommandType, translateCommandBy, stringify } from "../utils/d.js";
 import { getIconSVG } from "../utils/svg.js";
 import Grid from "./svg/Grid.js";
@@ -364,6 +364,14 @@ function Canvas() {
                                     this.state.translatingPathName = null;
                                     context.commit();
                                 }
+                            },
+                            dblclick(e) {
+                                if (e.target.closest('svg > *:not([data-gridline=true])')) return;
+                                const svgBindingRect = fixRect(this.element.getBoundingClientRect());
+                                const xProportion = (e.clientX - svgBindingRect.left) / svgBindingRect.width, yProportion = (e.clientY - svgBindingRect.top) / svgBindingRect.height;
+                                const xPos = Math.round(xProportion * context.icon.width), 
+                                    yPos = Math.round(yProportion * context.icon.height);
+                                addPath('Path', {startCoord: {x: xPos, y: yPos}});
                             }
                         }
                     }
