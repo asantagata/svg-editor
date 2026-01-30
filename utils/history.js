@@ -4,6 +4,7 @@ let history = [];
 let future = [];
 
 export function recordSnapshot(ctx = context) {
+    future = [];
     history.push(
         window.structuredClone(
             {
