@@ -109,7 +109,7 @@ function SVGStringtoFRUIT(svg, resolve, reject) {
     } catch (e) {
         context.modal = 'warning';
         context.warning = {
-            body: `The SVG could not be processed. Try uploading it as a .svg file.`,
+            body: `The SVG could not be processed.`,
             button: {
                 text: 'OK',
                 onClick: () => reject(null)
