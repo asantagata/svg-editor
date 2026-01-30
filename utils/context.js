@@ -1,6 +1,7 @@
 import { getIconSVG } from "./svg.js";
 import { defaultPathD } from "./path.js";
 import { getID, putSVGInDB } from "./persistence.js";
+import { recordSnapshot } from "./history.js";
 
 export function getDefaultPath() { 
     return {
@@ -29,8 +30,11 @@ const context = {
     },
     selectedPath: null,
     rerender: () => {},
-    commit: () => {
+    commit: (recordingSnapshot = true) => {
         context.iconSVG = getIconSVG();
+        if (recordingSnapshot) {
+            recordSnapshot();
+        }
         context.rerender();
         queueMicrotask(putSVGInDB);
     },
@@ -43,5 +47,6 @@ const context = {
 };
 
 context.iconSVG = getIconSVG(context.icon);
+recordSnapshot(context);
 
 export default context;

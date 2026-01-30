@@ -3,6 +3,7 @@ import { getIconSVG } from "../utils/svg.js";
 import SVGs from "./SVGs.js";
 import { deleteFromDB, getID } from "../utils/persistence.js";
 import { getPathName } from "../utils/path.js";
+import { clearHistory } from "../utils/history.js";
 
 function getDateString(lastModified) {
     if (!lastModified) return 'No date';
@@ -37,7 +38,9 @@ export default function FileModal(additive = false) {
                         context.id = getID();
                         context.modal = null;
                         context.saves = null;
-                        context.rerender();
+                        context.warning = null;
+                        clearHistory();
+                        context.commit();
                     }}}
                 }
             ]),
@@ -82,6 +85,7 @@ export default function FileModal(additive = false) {
                             context.selectedPath = null;
                             context.modal = null;
                             context.saves = null;
+                            clearHistory();
                             context.commit();
                         }
                     }}
