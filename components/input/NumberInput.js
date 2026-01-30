@@ -24,6 +24,7 @@ export default function NumberInput(getValue, onChange = () => {}, {min = '', ma
                         binding: 'input',
                         type: 'number',
                         autocomplete: 'false',
+                        title: '',
                         value: stringify(getValue()),
                         min, max, step, placeholder,
                         on: {
