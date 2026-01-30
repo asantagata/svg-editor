@@ -49,13 +49,14 @@ function PathList() {
                         key: 'show-hide-me',
                         tag: 'button',
                         class: 'icon-button',
-                        title: p.style?.display ? 'Show' : 'Hide',
-                        innerHTML: p.style?.display ? SVGs.show : SVGs.hide,
+                        title: context.icon.children.find(c => c['data-name'] === p['data-name']).style?.display ? 'Show' : 'Hide',
+                        innerHTML: context.icon.children.find(c => c['data-name'] === p['data-name']).style?.display ? SVGs.show : SVGs.hide,
                         on: {click() {
-                            if (p.style?.display) {
-                                p.style = {display: ''};
+                            const path = context.icon.children.find(c => c['data-name'] === p['data-name']);
+                            if (path.style?.display) {
+                                path.style = {display: ''};
                             } else {
-                                p.style = {display: 'none'};
+                                path.style = {display: 'none'};
                             }
                             context.commit();
                         }}
@@ -77,9 +78,9 @@ function PathList() {
                         title: 'Delete',
                         innerHTML: SVGs.delete,
                         on: {click() {
-                            if (p === context.selectedPath)
+                            if (p['data-name'] === context.selectedPath['data-name'])
                                 context.selectedPath = null;
-                            context.icon.children = context.icon.children.filter(c => c !== p);
+                            context.icon.children = context.icon.children.filter(c => c['data-name'] !== p['data-name']);
                             context.commit();
                         }}
                     }
