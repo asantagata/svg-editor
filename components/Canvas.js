@@ -89,10 +89,13 @@ function Canvas() {
                             ...Grid(context.icon.width, context.icon.height),
 
                             // main SVG
-                            ...[
-                                ...context.iconSVG.children.filter(path => context.selectedPath?.['data-name'] !== path['data-name']),
-                                ...(context.selectedPath ? [getIconSVG().children.find(c => c['data-name'] === context.selectedPath['data-name'])] : [])
-                            ].map(path => ({
+                            ...(() => {
+                                const icon = getIconSVG();
+                                return [
+                                    ...icon.children.filter(path => context.selectedPath?.['data-name'] !== path['data-name']),
+                                    ...(context.selectedPath ? [icon.children.find(c => c['data-name'] === context.selectedPath['data-name'])] : [])
+                                ]
+                            })().map(path => ({
                                 ...path, 
                                 key: `path-${path['data-name']}`,
                                 stroke: context.selectedPath && context.selectedPath['data-name'] === path['data-name']
